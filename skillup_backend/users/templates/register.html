@@ -1,0 +1,175 @@
+{%extends "base.html"%}
+
+{%block content%}
+<div class="container mt-5 " style="width: 25rem;">
+ 
+     <div class="row ">
+      <div class="shadow-lg p-3 mb-5 bg-body rounded">
+
+         <div class="p-5">
+             <h2 class="text-center ">Create an Account</h2>
+
+        <form method="post" id="registerForm"  novalidate>
+            {%csrf_token%}
+            <!-- top of register.html inside body -->
+ 
+       <div id="msg"></div>
+        <div class="row my-3  fw-bold">
+            <label for="first_name" class="ps-0">First Name : *</label>
+            <input type="text" id="first_name" name="first_name" class="rounded">
+        </div>
+        <div class="row mb-3  fw-bold">
+            <label for="last_name" class="ps-0">Last Name : *</label>
+            <input type="text" id="last_name" name="last_name" class="rounded">
+        </div>
+        <div class="row mb-3  fw-bold">
+            <label for="username" class="ps-0">Username : *</label>
+            <input id="username" name="username" placeholder="Username" class="rounded" required/>
+        </div>
+        <div class="row mb-3   fw-bold">
+            <label for="email" class="ps-0">Email : *</label>
+            <input id="email" name="email" type="email" placeholder="name@gmail.com" class="rounded" required>
+        </div>
+        <div class="row mb-3   fw-bold">
+             <label for="avatar" class="ps-0">Avatar :</label>
+             <input type="file" id="avatar" name="avatar" >
+        </div>
+        <div class="row mb-3   fw-bold">
+           <label for="bio" class="ps-0">Bio :</label>
+           <input type="text" name="bio" id="bio" class="rounded">
+        </div>
+        <div class="row mb-3  fw-bold">
+            <label for="password" class="ps-0 ">Password : *</label>
+            <input type="password" name="password" id="password" class="rounded" required>
+        </div>
+        <div class="row mb-3 fw-bold">
+            <label for="password2" class="ps-0  ">Confirm password : *</label>
+            <input type="password" name="password2" id="password2" class="rounded" required>
+        </div>
+        <div class="ps-0 mb-3">
+        <button type="submit" style="width:100%;" class="btn btn-outline-primary rounded">Register</button>
+        </div>
+        <div class="col ">
+          <p>Already have an account? <a href="{%url 'login'%}">login</a></p>
+        </div>
+        <!--<div id="msg"></div>-->
+        </form>
+        </div>
+    </div>
+</div>
+    </span> 
+</div>
+  <!---<h2>Create account</h2>
+
+  <form id="registerForm" method="post" novalidate>
+    {% csrf_token %}
+    <input id="username" name="username" placeholder="Username" required />
+    <input id="email" name="email" type="email" placeholder="Email" required />
+    <input id="password" name="password" type="password" placeholder="Password" required />
+    <button type="submit">Register</button>
+    <div id="msg"></div>
+  </form>--->
+{%endblock%}
+
+{% block scripts %}
+     
+<script>
+  // get CSRF token from cookie (inserted by {% csrf_token %})
+  function getCookie(name) {
+    const v = `; ${document.cookie}`;
+    const parts = v.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+  const form = document.getElementById('registerForm');
+  const msg = document.getElementById('msg');
+
+function getCookie(name) {
+  const v = `; ${document.cookie}`;
+  const parts = v.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  msg.textContent = '';
+  msg.className = '';
+
+  const first_name = document.getElementById('first_name').value.trim();
+  const last_name  = document.getElementById('last_name').value.trim();
+  const username   = document.getElementById('username').value.trim();
+  const email      = document.getElementById('email').value.trim();
+  const avatarElem = document.getElementById('avatar');
+  const bio        = document.getElementById('bio').value.trim();
+  const password   = document.getElementById('password').value;
+  const password2  = document.getElementById('password2').value;
+
+  if (!username || !email || !password) {
+    msg.textContent = 'Username, email and password are required.';
+    msg.className = 'error';
+    return;
+  }
+
+  console.log('username |'+username+'|');
+  console.log('email |'+email+'|');
+
+  const formData = new FormData();
+  formData.append('first_name', first_name);
+  formData.append('last_name', last_name);
+  formData.append('username', username);
+  formData.append('email', email);
+  formData.append('bio', bio);
+  formData.append('password', password);
+  formData.append('password2', password2);
+
+  if (avatarElem.files.length > 0) {
+    formData.append('avatar', avatarElem.files[0]);
+  }
+
+  try {
+    const csrfToken = getCookie('csrftoken');
+    const res = await fetch('/api/auth/register/', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {
+        'X-CSRFToken': csrfToken
+        // DO NOT set Content-Type header!
+      },
+      body: formData
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      console.error('Validation Errors:', data);
+      // Display errors appropriately (fields etc.)
+      msg.textContent = JSON.stringify(data);
+      msg.className = 'error';
+      return;
+    }
+
+    console.log('Registration succeeded:', data);
+    msg.textContent = 'Account created successfully.';
+    msg.className = 'success';
+    window.location.href = '/login/';
+
+
+  } catch (err) {
+    console.error('Fetch error:', err);
+    msg.textContent = 'An error occurred. Please try again.';
+    msg.className = 'error';
+  }
+
+
+  
+
+      // if API returns tokens, save them
+      if (data.access) {
+        localStorage.setItem('access_token', data.access);
+        if (data.refresh) localStorage.setItem('refresh_token', data.refresh);
+      }
+
+      setTimeout(() => window.location.href = '/login/', 800);
+
+     
+  });
+</script>
+{%endblock scripts%}

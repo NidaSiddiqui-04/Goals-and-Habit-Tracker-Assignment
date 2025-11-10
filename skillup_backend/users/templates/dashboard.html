@@ -1,0 +1,36 @@
+
+
+
+{%extends 'navbar.html'%}
+{%block content%}
+<h2>dashboard</h2>
+{{goal.title}}
+<div id="goal-list"></div>
+   {%endblock%}
+  {%block scripts%}
+   <script>
+      let access = localStorage.getItem('accessToken');
+      let res = await fetch("api/goals/", {
+        method:'GET',
+        headers: { 'Authorization': `Bearer ${access}` }
+      });
+
+      if (res.status === 401) {  // expired token
+        access = await refreshToken();
+        res = await fetch(API_URL, {
+          headers: { 'Authorization': `Bearer ${access}` }
+        });
+      }
+
+      const data = await res.json();
+      const list = document.getElementById('goal-list');
+      list.innerHTML = '';
+      data.forEach(goal => {
+        list.innerHTML += `<li class container>${goal.title} - ${goal.category}
+          <a href="/goals/${goal.id}/update/">Edit</a> |
+          <a href="/goals/${goal.id}/delete/">Delete</a></li>`;
+      });
+    
+   </script>
+
+{%endblock scripts%}

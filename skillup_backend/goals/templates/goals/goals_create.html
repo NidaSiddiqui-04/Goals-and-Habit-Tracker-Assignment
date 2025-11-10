@@ -1,0 +1,94 @@
+ {%extends 'navbar.html'%}
+{%block content%}
+    <div class="container mt-5" style="width: 25rem;">
+        <div class="shadow-lg p-3 mb-5 bg-body rounded">
+
+        <div class="row p-3">
+              <h2>Create a New Goal</h2>
+                <form id="goalForm">
+                    <div class="col my-3">
+                    <label for="title">Title:*</label>
+                        <input type="text" id="title" name="title" placeholder="Title" class="form-control" required><br>
+                    </div>
+                    <div class="col mb-3">
+                        <label for="description">Description:</label>
+                        <textarea id="description" placeholder="Description" class="form-control"></textarea><br>
+
+                    </div>
+                    <div class="col mb-3">
+                        <label for="category">Category:</label>
+                        <select id="category" class="form-control">
+                            <option value="fitness">Fitness</option>
+                            <option value="coding">Coding</option>
+                            <option value="reading">Reading</option>
+                            <option value="custom">Custom</option>
+                         </select><br>
+                    </div>
+                    <div class="col">    <button type="submit" class="btn btn-outline-success" style="width: 100%;">Create</button>
+</div> 
+                </form>
+        </div></div>
+    </div>
+  
+{%endblock%}
+{%block scripts%}
+  <script>
+    const API_URL = 'http://localhost:8000/api/goals/';
+
+    async function refreshToken() {
+      const refresh = localStorage.getItem('refresh');
+      const res = await fetch('http://localhost:8000/api/auth/refresh/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ refresh })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('access', data.accessToken);
+        return data.accessToken;
+      } else {
+        alert('Session expired. Please log in again.');
+        window.location.href = '/login/';
+      }
+    }
+
+    document.getElementById('goalForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      let access = localStorage.getItem('accessToken');
+
+      const body = {
+        title: document.getElementById('title').value,
+        description: document.getElementById('description').value,
+        category: document.getElementById('category').value
+      };
+
+      let res = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${access}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (res.status === 401) {
+        access = await refreshToken();
+        res = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${access}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        });
+      }
+
+      if (res.ok) {
+        
+        window.location.href = '/goal_list/';
+      } else {
+        alert('Error creating goal.');
+      }
+    });
+  </script>
+ {%endblock scripts%}

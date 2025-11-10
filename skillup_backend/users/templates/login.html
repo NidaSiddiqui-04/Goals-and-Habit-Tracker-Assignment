@@ -1,0 +1,111 @@
+{%extends 'base.html'%}
+{%block content%}
+
+<div class="container mt-5  " style="width: 23rem;">
+    
+
+    
+
+    <div class="row ">
+        <div class="shadow-lg p-3 mb-5 bg-body rounded">
+
+     <div class="p-3">
+    <div id="msg"></div>
+    <h2 class="text-center ">Login</h2>
+      <form id="loginForm" method="post">
+        <div class="col my-3">
+            <label for="username" class="fw-bold ">Username:</label>
+            <input type="text" name="username" id="username" placeholder="Username" class="form-control rounded" required>
+        </div>
+        <div class="col mb-3">
+            <label for="password" class="fw-bold ">Password</label>
+            <input type="password" name="password" id="password" class="form-control" required>
+        </div>
+        <div class="col mb-3">
+                    <button type="submit" style="width: 100%;" class="btn btn-outline-primary">Login</button>
+
+        </div>
+        <div class="col  text-center">
+            <p>Don't have an account? <a href="{%url 'register-page'%}">Create</a></p>
+        </div>
+      </form>
+        </span>
+    </div>
+    </div>
+    
+</div>
+
+
+
+
+
+ 
+
+{%endblock%}
+
+{%block scripts%}
+<script>
+    
+
+
+const form = document.getElementById('loginForm');
+const msg  = document.getElementById('msg');
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  msg.textContent = '';
+  msg.className   = '';
+
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+  
+
+  if (!username || !password) {
+    msg.textContent = 'Username and password are required.';
+    msg.className   = 'error';
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/auth/login/', {
+      method: 'POST',
+      credentials:"include",
+      headers: {
+        'Content-Type': 'application/json',
+         // if you’re using CSRF
+      },
+      
+      body: JSON.stringify({username,password})
+    });
+       const data = await res.json();
+
+    
+
+    if (!res.ok) {
+      // show error message
+      msg.textContent = data.detail || 'Login failed. Please check credentials.';
+      msg.className   = 'error';
+      return;
+    }
+
+    // On success you’ll get something like: { access: "...", refresh: "..." }
+    const accessToken  = data.access;
+    const refreshToken = data.refresh;
+   
+    // Store them (localStorage, sessionStorage, or cookie depending on your security model)
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
+    console.log(data.username)
+    console.log(localStorage.getItem('accessToken'))
+    if (res.ok && data.access) {
+    // Redirect to dashboard or whatever page you want
+    window.location.href = '/dashboard/';
+    }
+  } catch (err) {
+    console.error('Login fetch error:', err);
+    msg.textContent = 'An error occurred. Try again later.';
+    msg.className   = 'error';
+  }
+});
+</script>
+{%endblock scripts%}

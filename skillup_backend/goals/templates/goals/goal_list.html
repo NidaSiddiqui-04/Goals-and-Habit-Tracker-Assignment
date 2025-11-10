@@ -1,0 +1,117 @@
+
+{%extends 'navbar.html' %}
+  {% block extra_styles %}
+  
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f6f8fa;
+      margin: 20px;
+    }
+    h2 {
+      color: #333;
+    }
+    .card {
+      background: #fff;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .card h3 {
+      margin: 0 0 8px 0;
+      color: #444;
+    }
+    .card p {
+      margin: 0 0 10px 0;
+      color: #666;
+    }
+    .card a {
+      color: #007bff;
+      text-decoration: none;
+      margin-right: 10px;
+    }
+    .card a:hover {
+      text-decoration: underline;
+    }
+  </style>
+  
+  {% endblock extra_styles %}
+ {%block content%}
+ <div class="container mt-5">
+  <h2 class="text-center"> Your Goals</h2>
+  <div class="row text-end">
+    <div class="col-12">
+      <a href="{%url 'goal_create'%}" class="btn btn-outline-info">Create Goal</a>
+    </div>
+  </div>
+  <div class="container mx-auto" >
+    <div class="row justify-content-center">
+      <div class="col-6" >
+        <div id="goal-container">
+
+        </div>
+      </div>
+    </div>
+  </div>
+ </div>
+{%endblock%}
+{%block scripts%}
+  <script>
+    const API_URL = 'http://localhost:8000/api/goals/';
+    const REFRESH_URL = 'http://localhost:8000/api/auth/token/refresh/';
+
+    async function refreshToken() {
+      const refresh = localStorage.getItem('refresh');
+      const res = await fetch(REFRESH_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('accessToken', data.access);
+        return data.access;
+      } else {
+        alert('Session expired. Please log in again.');
+        window.location.href = '/login/';
+      }
+    }
+
+    async function fetchGoals() {
+      let access = localStorage.getItem('accessToken');
+      let res = await fetch(API_URL, {
+        headers: { 'Authorization': `Bearer ${access}` }
+      });
+
+      if (res.status === 401) {
+        access = await refreshToken();
+        res = await fetch(API_URL, {
+          headers: { 'Authorization': `Bearer ${access}` }
+        });
+      }
+
+      const data = await res.json();
+      const container = document.getElementById('goal-container');
+      container.innerHTML = '';
+
+      data.forEach(goal => {
+        const card = document.createElement('div');
+        card.classList.add('card');
+      
+        card.innerHTML = `
+          <h3>${goal.title}</h3>
+          <p><strong>Category:</strong> ${goal.category}</p>
+          <p><strong>Description:</strong> ${goal.description || 'No description provided.'}</p>
+          <a href="/goals/${goal.id}/update/">Edit</a>
+           <a href="/goals/${goal.id}/delete/">Delete</a>
+          
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Automatically load goals when the page loads
+    document.addEventListener('DOMContentLoaded', fetchGoals);
+  </script>
+{%endblock scripts%}
