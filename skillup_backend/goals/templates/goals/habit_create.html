@@ -1,0 +1,113 @@
+{%extends 'navbar.html'%}
+{%block content%}
+
+
+<div class="container mt-5" style="width: 25rem;">
+    <div class="shadow-lg p-3 mb-5 bg-body rounded">
+
+    <div class="p-3">
+      <h1>Create New Habit</h1>
+
+    <div class="row">
+          <form id="createForm">
+
+        <div class="col mb-3">
+         <label for="name">Name: *</label>
+            <input type="text" name="name" id="name" placeholder="Habit name" class="form-control" required />
+ 
+        </div>
+        <div class="col mb-3">
+            <label for="frequency">Frequency:</label>
+    
+             <select id="frequency" name="frequency" class="form-control">
+                            <option value="weekly">Weekly</option>
+                            <option value="daily">Daily</option>
+                         </select>
+
+        </div>
+        <div class="col mb-3">
+            <label for="target_value">Target Value:</label>
+            <input type="number" name="target_value" id="target_value" class="form-control" />
+
+        </div>
+        <div class="col">    <button type="submit" class="btn btn-outline-success" style="width: 100%;">Create Habit</button>
+</div>
+          </form>
+    </div>
+      <p id="message"></p>
+
+    </div>
+</div>
+</div>
+   
+  {%endblock%}
+  {%block scripts%}
+  <script>
+    const apiBase = 'http://localhost:8000/api'; // adjust
+     const createForm = document.getElementById('createForm');
+    const message = document.getElementById('message');
+     async function refreshToken() {
+      const refresh = localStorage.getItem('refresh');
+      const res = await fetch('http://localhost:8000/api/auth/refresh/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ refresh })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('access', data.accessToken);
+        return data.accessToken;
+      } else {
+        alert('Session expired. Please log in again.');
+        window.location.href = '/login/';
+      }
+    }
+
+    createForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const goalId = '{{goal_id}}';
+      let access = localStorage.getItem('accessToken');
+
+      const formData = new FormData(createForm);
+      const data = {
+        name:document.getElementById('name').value,
+        frequency:document.getElementById('frequency').value,
+        target_value:document.getElementById('target_value').value
+      };
+      try {
+        const resp = await fetch(`${apiBase}/goals/${goalId}/habits/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${access}`,
+
+            // auth header if needed
+          },
+          body: JSON.stringify(data)
+        });
+        if (!resp.ok) {
+          const err = await resp.json();
+          throw new Error(JSON.stringify(err));
+        }
+          if (resp.ok) {
+        const created = await resp.json();
+        message.textContent = `Habit created (ID: ${created.id})`;
+        
+        window.location.href = `/${goalId}/habit`;
+      
+      
+      
+    
+        
+        }
+      } catch (err) {
+        console.error(err);
+        message.textContent = 'Error creating habit.';
+      }
+     
+      
+});
+
+  </script>
+
+{%endblock scripts%}

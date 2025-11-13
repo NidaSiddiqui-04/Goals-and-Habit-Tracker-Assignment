@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from goals.serializers import UserBadgeSerializer
 
 User = get_user_model()
 
@@ -42,6 +43,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.save()
         return user
 class UserSerializer(serializers.ModelSerializer):
+    badges = UserBadgeSerializer(source='user_badges', many=True, read_only=True)
+
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'xp_points', 'level', 'streak_count', 'avatar', 'bio')
+        fields = ('id', 'username', 'email', 'xp_points', 'level', 'streak_count', 'avatar', 'bio','badges')

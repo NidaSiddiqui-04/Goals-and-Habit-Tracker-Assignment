@@ -1,0 +1,133 @@
+
+{% extends 'navbar.html' %}
+{% block content %}
+<div class="container mt-4 text-end">
+  <button
+    type="button"
+    onclick="window.location.href=`/${goalId}/habit/create/`"
+    class="btn btn-outline-info">
+    Add habits
+  </button>
+</div>
+
+<h1 class="text-center">Habits</h1>
+<div id="habitListContainer">Loading …</div>
+{% endblock %}
+
+ {% block scripts %}
+<script>
+  const goalId = '{{ goal_id }}';
+  const apiBase = `http://localhost:8000/api/goals/${goalId}/habits/`;
+  const container = document.getElementById('habitListContainer');
+  const access = localStorage.getItem('accessToken');
+
+  // ✅ Fetch all habits for the selected goal
+  fetch(apiBase, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${access}`
+    }
+  })
+  .then(resp => {
+    if (!resp.ok) {
+      throw new Error(`Error fetching habits for goal ${goalId}`);
+    }
+    return resp.json();
+  })
+  .then(habits => {
+    if (!habits.length) {
+      container.innerHTML = '<p class="text-center fw-bold">No habits found for this goal.</p>';
+    } else {
+      container.innerHTML = '';  // clear “Loading …”
+      habits.forEach(habit => {
+        const div = document.createElement('div');
+        div.className = 'habit-item';
+        div.innerHTML = `
+          <div class="container" style="width:25rem;">
+            <div class="shadow-lg p-3 mb-5 bg-body rounded">
+              <div class="row">
+                <div class="col-12 mb-3"><h3>${habit.name}</h3></div>
+                <div class="col-12 mb-3"><strong>Frequency:</strong> ${habit.frequency}</div>
+                <div class="col-12 mb-3"><strong>Target Value:</strong> ${habit.target_value || 1}</div>
+                <div class="col-12 mb-3"><strong>Streaks:</strong> <span id="streak-${habit.id}">${habit.current_streak}</span></div>
+                <p id="status-${habit.id}" style="color:green;"></p>
+              </div>
+              <div class="row">
+                <div class="col-6">
+                  <a href="/${goalId}/habit/delete/${habit.id}/" class='btn btn-outline-danger'>Delete</a>
+                </div>
+                <div class="col-6">
+                  <button 
+                    id="checkin-btn-${habit.id}" 
+                    class="btn btn-outline-success" 
+                    onclick="markAsDone(${habit.id})">
+                    Mark as Done
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    container.innerText = 'Error loading habits.';
+  });
+
+  // ✅ Function to mark habit as done
+  async function markAsDone(habitId) {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      alert("You are not logged in!");
+      return;
+    }
+
+    const button = document.getElementById(`checkin-btn-${habitId}`);
+    const statusElement = document.getElementById(`status-${habitId}`);
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/progress/${habitId}/checkin/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // ✅ Update streak and change button state
+        document.getElementById(`streak-${habitId}`).textContent = data.habit.current_streak;
+        button.textContent = "✅ Done";
+        button.disabled = true;
+        button.classList.remove('btn-outline-success');
+        button.classList.add('btn-success');
+        statusElement.textContent = "Habit marked as done!";
+        statusElement.style.color = "green";
+      } else {
+        // ✅ Handle already done case
+        if (data.detail && data.detail.includes("Already checked in")) {
+          button.textContent = "✅ Done";
+          button.disabled = true;
+          button.classList.remove('btn-outline-success');
+          button.classList.add('btn-success');
+          statusElement.textContent = "Already marked as done today!";
+          statusElement.style.color = "green";
+        } else {
+          statusElement.style.color = "red";
+          statusElement.textContent = data.detail || "Something went wrong!";
+        }
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      statusElement.textContent = "⚠️ Error while checking in.";
+      statusElement.style.color = "red";
+    }
+  }
+</script>
+{% endblock scripts %}

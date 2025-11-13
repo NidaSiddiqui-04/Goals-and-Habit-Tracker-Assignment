@@ -1,0 +1,78 @@
+
+
+  
+  {%extends 'navbar.html'%}
+  {%block content%}
+  <div class="container mt-5">
+      <h1 class="text-center">Are you sure you want to delete this habit!</h1>
+      <div class="row mt-4">
+        <div class="col-6 text-end">  <button id="deleteBtn" class="btn btn-outline-success">Yes,Delete</button>
+</div>
+        <div class="col-6 text-start">
+            <button onclick="window.location.href=`/${goalId}/habit`" type="button" class="btn btn-outline-danger"> No</button>
+        </div>
+      </div>
+
+  </div>
+  
+
+  <p id="message"></p>
+{%endblock%}
+{%block scripts%}
+  <script>
+    
+    const deleteBtn = document.getElementById('deleteBtn');
+    const message = document.getElementById('message');
+         const goalId = '{{goal_id}}';
+
+     async function refreshToken() {
+      const refresh = localStorage.getItem('refresh');
+      const res = await fetch('http://localhost:8000/api/auth/refresh/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ refresh })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('access', data.accessToken);
+        return data.accessToken;
+      } else {
+        alert('Session expired. Please log in again.');
+        window.location.href = '/login/';
+      }
+    }     
+
+    deleteBtn.addEventListener('click', async () => {
+       const habitId = '{{habit_id}}';
+          const apiBase = `http://localhost:8000/api/goals/${goalId}/habits/${habitId}/`; // adjust
+     console.log(apiBase)
+      let access = localStorage.getItem('accessToken');
+    
+      try {
+        const resp = await fetch(apiBase, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${access}`,
+
+            // auth header if needed
+          }
+        });
+        if (!resp.ok) {
+          const err = await resp.json();
+          throw new Error(JSON.stringify(err));
+        }
+        if (resp.ok){
+        message.textContent = `Habit (ID: ${habitId}) deleted.`;
+        window.location.href=`/${goalId}/habit`
+        }
+      } catch (err) {
+        console.error(err);
+        message.textContent = 'Error deleting habit.';
+      }
+    });
+  </script>
+{%endblock scripts%}
+
+
+  

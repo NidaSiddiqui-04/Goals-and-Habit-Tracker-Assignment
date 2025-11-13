@@ -45,6 +45,8 @@
       <a href="{%url 'goal_create'%}" class="btn btn-outline-info">Create Goal</a>
     </div>
   </div>
+  
+
   <div class="container mx-auto" >
     <div class="row justify-content-center">
       <div class="col-6" >
@@ -77,8 +79,7 @@
         window.location.href = '/login/';
       }
     }
-
-    async function fetchGoals() {
+   async function fetchGoals() {
       let access = localStorage.getItem('accessToken');
       let res = await fetch(API_URL, {
         headers: { 'Authorization': `Bearer ${access}` }
@@ -90,8 +91,7 @@
           headers: { 'Authorization': `Bearer ${access}` }
         });
       }
-
-      const data = await res.json();
+   const data = await res.json();
       const container = document.getElementById('goal-container');
       container.innerHTML = '';
 
@@ -100,12 +100,15 @@
         card.classList.add('card');
       
         card.innerHTML = `
+        <div>
           <h3>${goal.title}</h3>
           <p><strong>Category:</strong> ${goal.category}</p>
           <p><strong>Description:</strong> ${goal.description || 'No description provided.'}</p>
-          <a href="/goals/${goal.id}/update/">Edit</a>
-           <a href="/goals/${goal.id}/delete/">Delete</a>
-          
+
+          <a href="/goals/${goal.id}/update/" class="btn btn-outline-success text-dark ">Edit</a>
+           <a href="/goals/${goal.id}/delete/" class="btn btn-outline-danger text-dark">Delete</a>
+          <a href="/${goal.id}/habit" class="btn btn-outline-info"> Habits</a>
+          </div>
         `;
         container.appendChild(card);
       });
@@ -113,5 +116,7 @@
 
     // Automatically load goals when the page loads
     document.addEventListener('DOMContentLoaded', fetchGoals);
+    
+     
   </script>
 {%endblock scripts%}

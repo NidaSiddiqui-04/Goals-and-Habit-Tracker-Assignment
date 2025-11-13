@@ -40,7 +40,7 @@
     const goalId = "{{ goal_id }}";
     const API_URL = `http://localhost:8000/api/goals/${goalId}/`;
 
-    async function refreshToken() {
+     async function refreshToken() {
       const refresh = localStorage.getItem('refresh');
       const res = await fetch('http://localhost:8000/api/auth/refresh/', {
         method: 'POST',
