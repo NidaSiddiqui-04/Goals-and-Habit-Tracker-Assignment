@@ -151,7 +151,9 @@ class MyBadgesListView(ListAPIView):
     serializer_class = UserBadgeSerializer
 
     def get_queryset(self):
-        return UserBadge.objects.filter(user=self.request.user).order_by('-earned_on')
+        return UserBadge.objects.filter(user=self.request.user).order_by('-earned_on')[:1]
+
+
 
 class LeaderboardView(ListAPIView):
     permission_classes = [AllowAny]

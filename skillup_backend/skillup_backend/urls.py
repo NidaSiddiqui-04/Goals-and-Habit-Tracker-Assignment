@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter,SimpleRouter
 from goals.views import GoalViewSet, HabitViewSet 
-from users.views import RegisterView, MeView,RegisterPageView,LoginPageView,dashboard,Logout
+from users.views import RegisterView, MeView,RegisterPageView,LoginPageView,dashboard,Logout,user_profile,edit_profile
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from goals import urls
@@ -44,12 +44,13 @@ urlpatterns = [
     path('login/',LoginPageView.as_view(),name='login'),
     path('logout/',Logout.as_view(),name="logout"),
     path('dashboard/',dashboard.as_view(),name='dashboard'),
-    path('api/auth/me/', MeView.as_view(), name='auth-me'),
+    path( 'api/auth/me/',  MeView.as_view({'get': 'retrieve', 'put': 'update'}), name='auth-me'),
     path('api/auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-     path('goal_list/',goals_list, name='goal_list'),
-    path('goals/create/', goal_create, name='goal_create'),
-    
+    path('user_profile/',user_profile,name="user_profile"),
+    path('profile/edit/',edit_profile,name="edit_profile"),
+    path('goal_list/',goals_list, name='goal_list'),
+    path('goals/create/', goal_create, name='goal_create'), 
     path('goals/<int:id>/update/', goal_update, name='goal_update'),
     path('goals/<int:id>/delete/', goal_delete, name='goal_delete'),
     path('<int:id>/habit',habit_list,name='habit_list'),

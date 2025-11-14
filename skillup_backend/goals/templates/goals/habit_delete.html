@@ -24,7 +24,6 @@
     const deleteBtn = document.getElementById('deleteBtn');
     const message = document.getElementById('message');
          const goalId = '{{goal_id}}';
-
      async function refreshToken() {
       const refresh = localStorage.getItem('refresh');
       const res = await fetch('http://localhost:8000/api/auth/refresh/', {
@@ -41,6 +40,7 @@
         window.location.href = '/login/';
       }
     }     
+   
 
     deleteBtn.addEventListener('click', async () => {
        const habitId = '{{habit_id}}';

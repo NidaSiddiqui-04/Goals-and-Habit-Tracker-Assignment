@@ -1,0 +1,114 @@
+{% extends 'navbar.html' %}
+
+
+{% block content %}
+<div class="container mt-5" style="width: 25rem;">
+  <div class="shadow-lg p-3 mb-5 bg-body rounded">
+    <div class="row justify-content-center p-5">
+      <div class="profile-container">
+        <h1 class="text-center">Edit Profile</h1>
+
+        <form id="profileEditForm">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="inputUsername" class="form-label">Username</label>
+            <input type="text" name="username" id="inputUsername" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="inputEmail" class="form-label">Email</label>
+            <input type="email" class="form-control" id="inputEmail" name="email" required>
+          </div>
+          <div class="mb-3">
+            <label for="inputFirstName" class="form-label">First Name</label>
+            <input type="text" class="form-control" id="inputFirstName" name="first_name">
+          </div>
+          <div class="mb-3">
+            <label for="inputLastName" class="form-label">Last Name</label>
+            <input type="text" class="form-control" id="inputLastName" name="last_name">
+          </div>
+          <!-- Add more editable fields if needed -->
+          <button type="submit" class="btn btn-outline-success">Save Changes</button>
+          <a href="{% url 'user_profile' %}" class="btn btn-outline-danger">Cancel</a>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  let access = localStorage.getItem('accessToken');
+   async function refreshToken() {
+      const refresh = localStorage.getItem('refresh');
+      const res = await fetch('http://localhost:8000/api/auth/refresh/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ refresh })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('access', data.accessToken);
+        return data.accessToken;
+      } else {
+        alert('Session expired. Please log in again.');
+        window.location.href = '/login/';
+      }
+    }     
+
+  document.addEventListener('DOMContentLoaded', async function() {
+    // Prefill the form with current user data
+    try {
+      const res = await fetch('/api/auth/me/', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${access}`
+        }
+      });
+      if (!res.ok) throw new Error(`Failed to fetch profile: ${res.status}`);
+      const data = await res.json();
+      document.getElementById('inputUsername').value=data.username ||"";
+      document.getElementById('inputEmail').value = data.email || '';
+      document.getElementById('inputFirstName').value = data.first_name || '';
+      document.getElementById('inputLastName').value = data.last_name || '';
+    } catch (err) {
+      console.error('Error fetching profile for edit:', err);
+      alert('Could not load profile data.');
+    }
+  });
+
+  document.getElementById('profileEditForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const body = {
+        username:document.getElementById('inputUsername').value,
+      email: document.getElementById('inputEmail').value,
+      first_name: document.getElementById('inputFirstName').value,
+      last_name: document.getElementById('inputLastName').value
+    };
+    try {
+      const res = await fetch('/api/auth/me/', {
+        method: 'PUT',  
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${access}`
+        },
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        console.error('Update failed:', err);
+        alert('Failed to update profile.');
+        return;
+      }
+      const updated = await res.json();
+      console.log('Profile updated successfully:', updated);
+      window.location.href = "{% url 'user_profile' %}";
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      alert('Something went wrong.');
+    }
+  });
+</script>
+{% endblock %}

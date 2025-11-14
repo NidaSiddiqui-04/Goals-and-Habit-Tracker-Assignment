@@ -12,7 +12,7 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from rest_framework import viewsets
 
 User = get_user_model()
 
@@ -60,9 +60,16 @@ class RegisterView(generics.CreateAPIView):
     
 
 
-class MeView(generics.RetrieveAPIView):
+class MeView(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
         return self.request.user
+
+
+def user_profile(request):
+    return render(request,"user_profile.html")
+
+def edit_profile(request):
+    return render(request,'edit_profile.html')
