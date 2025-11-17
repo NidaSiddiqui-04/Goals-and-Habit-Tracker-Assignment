@@ -1,0 +1,92 @@
+{%extends 'navbar.html'%}
+{%block content%}
+
+<div class="container mt-4">
+    <h1 class="text-center">⭐LEADERBOARD⭐</h1>
+    <div class="row ">
+        <div class="col-12" id="leaderboard"></div>
+    </div>
+    
+
+</div>
+{%endblock%}
+{%block scripts%}
+<script>
+    let access=localStorage.getItem('accessToken')
+    const api='http://localhost:8000/api/leaderboard/'
+    async function refreshToken() {
+      const refresh = localStorage.getItem('refresh');
+      const res = await fetch('http://localhost:8000/api/auth/refresh/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ refresh })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('access', data.accessToken);
+        return data.accessToken;
+      } else {
+        alert('Session expired. Please log in again.');
+        window.location.href = '/login/';
+      }
+    }  
+    
+    async function fetchGoals() {
+      let access = localStorage.getItem('accessToken');
+      let res = await fetch(api, {
+        method:'GET',
+        headers: { 'Authorization': `Bearer ${access}` }
+      });
+
+      if (res.status === 401) {
+        access = await refreshToken();
+        res = await fetch(api, {
+            method:'GET',
+          
+        });
+      }
+   const data = await res.json();
+      const container = document.getElementById('leaderboard');
+      container.innerHTML = '';
+
+      data.forEach(user => {
+        const card = document.createElement('div');
+        card.className='user_list';
+        
+      
+        card.innerHTML = `
+        <div class="container rounded-pill" style='height:15rem;width:1000px'>
+            <div class="shadow-lg p-3 mb-5 bg-body-tertiary rounded">
+
+            <div class="row" style='background-color:rgb(145, 173, 200);'>
+           <div class="col-4 ">
+            <h3 class ='text-center my-5 p-4'>🏆${user.xp_points}</h3>
+            </div>
+            <div class="col-8">
+            <div class="row mt-3">
+              <div class='col-6'>     
+            <img src='${user.avatar}' alt="user" class="img-fluid rounded-circle w-50">
+               </div>
+               <div class='col-6 mt-5'>
+          <p><strong>username : </strong>${user.username}</p>
+          <p><strong>Level : </strong>${user.level}</p>
+          </div>
+          </div>
+          </div>
+          </div>
+          </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Automatically load goals when the page loads
+    document.addEventListener('DOMContentLoaded', fetchGoals);
+    
+     
+
+</script>
+
+
+{%endblock scripts%}

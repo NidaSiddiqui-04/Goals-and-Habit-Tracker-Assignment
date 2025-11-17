@@ -11,6 +11,11 @@
         <form id="profileEditForm">
           {% csrf_token %}
           <div class="mb-3">
+            <img src="" id="image">
+            <input type="file" id="avatar" name="avatar" >
+
+          </div>
+          <div class="mb-3">
             <label for="inputUsername" class="form-label">Username</label>
             <input type="text" name="username" id="inputUsername" class="form-control" required>
           </div>
@@ -26,6 +31,10 @@
             <label for="inputLastName" class="form-label">Last Name</label>
             <input type="text" class="form-control" id="inputLastName" name="last_name">
           </div>
+          <div class="mb-3">
+            <label for="bio" class="form-label">Bio</label>
+            <input type="text" name="bio" id="bio" class="form-control">
+          </div>
           <!-- Add more editable fields if needed -->
           <button type="submit" class="btn btn-outline-success">Save Changes</button>
           <a href="{% url 'user_profile' %}" class="btn btn-outline-danger">Cancel</a>
@@ -38,70 +47,84 @@
 {% endblock %}
 
 {% block scripts %}
+
+
+
 <script>
   let access = localStorage.getItem('accessToken');
-   async function refreshToken() {
-      const refresh = localStorage.getItem('refresh');
-      const res = await fetch('http://localhost:8000/api/auth/refresh/', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ refresh })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        localStorage.setItem('access', data.accessToken);
-        return data.accessToken;
-      } else {
-        alert('Session expired. Please log in again.');
-        window.location.href = '/login/';
-      }
-    }     
+
+  async function refreshToken() {
+    const refresh = localStorage.getItem('refresh');
+    const res = await fetch('http://localhost:8000/api/auth/refresh/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      localStorage.setItem('accessToken', data.accessToken);
+      return data.accessToken;
+    } else {
+      alert('Session expired. Please log in again.');
+      window.location.href = '/login/';
+    }
+  }
 
   document.addEventListener('DOMContentLoaded', async function() {
-    // Prefill the form with current user data
     try {
-      const res = await fetch('/api/auth/me/', {
+      access = localStorage.getItem('accessToken');  // get fresh token
+      const res = await fetch('http://localhost:8000/api/auth/me/', {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${access}`
         }
       });
       if (!res.ok) throw new Error(`Failed to fetch profile: ${res.status}`);
       const data = await res.json();
-      document.getElementById('inputUsername').value=data.username ||"";
-      document.getElementById('inputEmail').value = data.email || '';
-      document.getElementById('inputFirstName').value = data.first_name || '';
-      document.getElementById('inputLastName').value = data.last_name || '';
+      const img = document.getElementById('image');
+      img.src = data.avatar;
+
+      document.getElementById('inputUsername').value = data.username || "";
+      document.getElementById('inputEmail').value = data.email || "";
+      document.getElementById('inputFirstName').value = data.first_name || "";
+      document.getElementById('inputLastName').value = data.last_name || "";
+      document.getElementById('bio').value = data.bio || "";
     } catch (err) {
       console.error('Error fetching profile for edit:', err);
       alert('Could not load profile data.');
     }
   });
 
+  const avatarElem = document.getElementById('avatar');
+
   document.getElementById('profileEditForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    const body = {
-        username:document.getElementById('inputUsername').value,
-      email: document.getElementById('inputEmail').value,
-      first_name: document.getElementById('inputFirstName').value,
-      last_name: document.getElementById('inputLastName').value
-    };
+    access = localStorage.getItem('accessToken');
+    const formData = new FormData();
+    formData.append('avatar', avatarElem.files[0]);
+
+    formData.append('username', document.getElementById('inputUsername').value);
+    formData.append('email', document.getElementById('inputEmail').value);
+    formData.append('first_name', document.getElementById('inputFirstName').value);
+    formData.append('last_name', document.getElementById('inputLastName').value);
+    formData.append('bio', document.getElementById('bio').value);
+
     try {
-      const res = await fetch('/api/auth/me/', {
-        method: 'PUT',  
+      const res = await fetch('http://localhost:8000/api/auth/me/', {
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${access}`
         },
-        body: JSON.stringify(body)
+        body: formData
       });
+
       if (!res.ok) {
-        const err = await res.json();
-        console.error('Update failed:', err);
+        const errData = await res.json();
+        console.error('Update failed:', errData);
         alert('Failed to update profile.');
         return;
       }
+
       const updated = await res.json();
       console.log('Profile updated successfully:', updated);
       window.location.href = "{% url 'user_profile' %}";
@@ -111,4 +134,5 @@
     }
   });
 </script>
-{% endblock %}
+
+{% endblock scripts %}

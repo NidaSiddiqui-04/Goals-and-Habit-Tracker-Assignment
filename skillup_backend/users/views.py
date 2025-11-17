@@ -62,6 +62,7 @@ class RegisterView(generics.CreateAPIView):
 
 class MeView(viewsets.ModelViewSet):
     serializer_class = UserSerializer
+    parser_classes = (MultiPartParser, FormParser)
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
@@ -72,4 +73,5 @@ def user_profile(request):
     return render(request,"user_profile.html")
 
 def edit_profile(request):
+
     return render(request,'edit_profile.html')

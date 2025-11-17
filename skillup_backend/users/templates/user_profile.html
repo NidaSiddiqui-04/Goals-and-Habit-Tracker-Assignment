@@ -20,6 +20,7 @@
     <li class="list-group-item"><div class="profile-detail"><span class="profile-label ps-5">Username:</span> <span id="username" class="fw-bold"></span></div></li>
     <li class="list-group-item"><div class="profile-detail"><span class="profile-label ps-5">Email:</span> <span id="email" class="fw-bold"></span></div></li>
     <li class="list-group-item"><div class="profile-detail"><span class="profile-label ps-5">Name:</span> <span id="name" class="fw-bold"></span></div></li>
+    <li class="list-group-item"><div class="profile-detail"><span class="profile-label ps-5">Bio :</span> <span id="bio" class="fw-bold"></span></div></li>
     <li class="list-group-item"><div class="profile-detail"><span class="profile-label ps-5">XP :</span> <span id="xp_points" class="fw-bold"></span></div></li>
     <li class="list-group-item"><div class="profile-detail"><span class="profile-label ps-5">Level :</span> <span id="level" class="fw-bold"></span></div></li>
     <li class="list-group-item"><div class="profile-detail"><span class="profile-label ps-5">Streaks  :</span> <span id="streaks" class="fw-bold"></span></div></li>
@@ -73,9 +74,11 @@
         throw new Error(`HTTP error! Status: ${profileRes.status}`);
       }
       const data = await profileRes.json();
+ 
       document.getElementById('username').textContent = data.username || '';
       document.getElementById('email').textContent = data.email || '';
       document.getElementById('name').textContent = `${data.first_name || ''} ${data.last_name || ''}`;
+      document.getElementById('bio').textContent=data.bio;
       document.getElementById('xp_points').textContent = data.xp_points || '';
       document.getElementById('level').textContent = data.level || '';
       document.getElementById('streaks').textContent = data.streak_count || '';

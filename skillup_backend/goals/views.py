@@ -82,8 +82,15 @@ class ProgressCheckinView(APIView):
         habit.save()
         user.save()
 
-        
-        
+        if user.xp_points>=100:
+            user.level=2
+        if user.xp_points>=200:
+            user.level=3
+        if user.xp_points>=300:
+            user.level=4
+        if user.xp_points>=400:
+            user.level=5    
+        user.save()
         
         XP_PER_CHECKIN = 10
         user.xp_points = (user.xp_points or 0) + XP_PER_CHECKIN
@@ -134,6 +141,7 @@ class ProgressCheckinView(APIView):
             },
             'xp_awarded': XP_PER_CHECKIN,
             'total_xp': user.xp_points,
+            'level':user.level,
             'awarded_badges': UserBadgeSerializer(newly_awarded, many=True).data if newly_awarded else []
         }
         return Response(resp, status=status.HTTP_201_CREATED)
@@ -160,7 +168,7 @@ class LeaderboardView(ListAPIView):
     serializer_class = LeaderboardSerializer
 
     def get_queryset(self):
-        return User.objects.order_by('-xp_points')[:50]
+        return User.objects.order_by('-xp_points')[:3]
 
 def check_and_award_badges(user):
     """
@@ -204,3 +212,7 @@ def habit_create(request,id):
 
 def habit_delete(request,id,pk):
     return render(request,'goals/habit_delete.html',{'goal_id':id,'habit_id':pk})
+
+
+def leaderboard(request):
+    return render(request,'goals/leaderboard.html')

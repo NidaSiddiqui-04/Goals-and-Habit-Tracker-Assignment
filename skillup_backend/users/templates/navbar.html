@@ -9,7 +9,7 @@
   {% endblock extra_styles %}
   </head>
 <body style="font-family:'Times New Roman', Times, serif;">
-     <nav class="navbar navbar-expand-lg navbar-light bg-light p-3">
+     <nav class="navbar navbar-expand-lg navbar-light bg-light p-2">
   <div class="container-fluid">
     <a class="navbar-brand fs-2" href="#">Goals and Habit Tracker</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,13 +19,19 @@
       
        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
       <ul class="nav">
-  <li class="nav-item">
-    <a class="nav-link text-dark fs-5" aria-current="page" href="#" id="content" onclick="window.location.href=`/user_profile/`"></a>
+         
+   <li class="nav-item">
+          
+          <a class="nav-link text-dark " aria-current="page" href="#" id="content" onclick="window.location.href=`/user_profile/`"></a>
+          
+
   </li>
   
   
   <li class="nav-item">
-    <a class="nav-link text-dark fs-5 " href="{%url 'logout'%}" tabindex="-1" aria-disabled="true">Logout</a>
+          
+
+    <a class="nav-link text-dark my-4 " href="{%url 'logout'%}" tabindex="-1" aria-disabled="true">Logout</a>
   </li>
 </ul>
       </div>
@@ -35,9 +41,9 @@
  </nav>
  <section class="container">
   <div class="row">
-    <div class="col-3"><a href="{%url 'dashboard'%}" class="nav-link btn btn-outline-info btn-lg text-dark  ">Home</a></div>
-    <div class="col-3"><a href="{%url 'goal_list'%}" class=" nav-link  btn btn-outline-warning btn-lg text-dark">Goals</a></div>
-    <div class="col-3"><a href="" class="nav-link btn btn-outline-danger btn-lg text-dark">habits</a></div>
+    <div class="col-3"><a href="{%url 'dashboard'%}" class="nav-link btn btn-outline-info btn-lg text-dark  ">Home 🏠</a></div>
+    <div class="col-3"><a href="{%url 'goal_list'%}" class=" nav-link  btn btn-outline-warning btn-lg text-dark">Goals 🎯</a></div>
+    <div class="col-3"><a href="{%url 'leaderboard'%}" class="nav-link btn btn-outline-danger btn-lg text-dark">LeaderBoard 🏆</a></div>
     <div class="col-3"><a href="" class="nav-link btn btn-outline-secondary btn-lg text-dark">link</a></div>
   </div>
 
@@ -70,7 +76,9 @@
         return r.json();
       })
       .then(data => {
-        document.getElementById('content').innerText = 'Welcome, ' + data.username+"!";
+        
+        document.getElementById('content').innerHTML =  `<img src="${data.avatar}"  class="img=fluid w-25 rounded-circle"> Welcome, ${data.username}!`;
+        
       }).catch(e => { console.error(e); });
     }
   </script>

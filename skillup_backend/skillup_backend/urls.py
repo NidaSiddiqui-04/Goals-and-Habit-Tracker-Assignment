@@ -25,7 +25,7 @@ from goals import urls
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework_nested.routers import NestedSimpleRouter
-from goals.views import goal_delete,goal_update,goals_list,goal_create,habit_list,habit_create,habit_delete,habit_completion
+from goals.views import goal_delete,goal_update,goals_list,goal_create,habit_list,habit_create,habit_delete,habit_completion,leaderboard
 
 router =SimpleRouter()
 router.register(r'goals', GoalViewSet, basename='goals')
@@ -53,6 +53,7 @@ urlpatterns = [
     path('goals/create/', goal_create, name='goal_create'), 
     path('goals/<int:id>/update/', goal_update, name='goal_update'),
     path('goals/<int:id>/delete/', goal_delete, name='goal_delete'),
+    path('leaderboard/',leaderboard,name="leaderboard"),
     path('<int:id>/habit',habit_list,name='habit_list'),
     path('<int:id>/habit/create/',habit_create,name="habit_create"),
     path('<int:id>/habit/delete/<int:pk>/',habit_delete,name="habit_delete"),
