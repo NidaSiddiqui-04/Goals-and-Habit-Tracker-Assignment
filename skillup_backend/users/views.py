@@ -13,6 +13,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from rest_framework import viewsets
+from datetime import timedelta,datetime
 
 User = get_user_model()
 
@@ -41,10 +42,7 @@ class LoginPageView(LoginView):
     
 
 
-class dashboard(TemplateView):
-   
-    
-    template_name='dashboard.html'
+
     
      
     
@@ -75,3 +73,7 @@ def user_profile(request):
 def edit_profile(request):
 
     return render(request,'edit_profile.html')
+
+def dashboard(request):
+    today=datetime.now()
+    return render(request,'dashboard.html',{'today':today.date})

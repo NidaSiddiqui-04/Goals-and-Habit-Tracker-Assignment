@@ -7,13 +7,13 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.utils import timezone
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView,RetrieveAPIView
 import logging, re
 logger = logging.getLogger(__name__)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.db import transaction, IntegrityError
-
+import datetime
 from django.contrib.auth import get_user_model
 from rest_framework.generics import CreateAPIView
 
@@ -169,17 +169,108 @@ class LeaderboardView(ListAPIView):
 
     def get_queryset(self):
         return User.objects.order_by('-xp_points')[:3]
+ 
+class DashboardView(RetrieveAPIView):
+    permission_classes=[IsAuthenticated]
+    def get(self,request):
+        goals=Goal.objects.filter(user=self.request.user)
+        user=request.user
+        resp ={
+            'no_of_goals':goals.count(),
+             'total_xp_point':user.xp_points,
+             'streaks':user.streak_count,
+              'level':user.level
+        }
+        return Response(resp,status=status.HTTP_200_OK)
 
-def check_and_award_badges(user):
-    """
-    This function checks user's XP and awards badges if thresholds are met.
-    """
-    badges = Badge.objects.filter(xp_required__lte=user.xp_points)  # all badges user qualifies for
 
-    for badge in badges:
-        already_earned = UserBadge.objects.filter(user=user, badge=badge).exists()
-        if not already_earned:
-            UserBadge.objects.create(user=user, badge=badge)
+class CurrentWeekCompleteReportView(APIView):
+    """
+    GET /api/weekly/report/
+    Returns a complete weekly report for the authenticated user for the current week (Monday - Sunday).
+    """
+    permission_classes = [IsAuthenticated]
+
+    def _current_week_range(self):
+        today = datetime.date.today()
+        start_of_week = today - datetime.timedelta(days=today.weekday())  # Monday
+        end_of_week = start_of_week + datetime.timedelta(days=6)          # Sunday
+        return start_of_week, end_of_week
+
+    def _count_logs_for_habit(self, habit, start_of_week, end_of_week):
+          return ProgressLog.objects.filter(habit=habit, date__range=[start_of_week, end_of_week]).count()
+           
+        
+
+    def get(self, request):
+        start_of_week, end_of_week = self._current_week_range()
+    
+        goals = Goal.objects.filter(user=request.user)
+
+        overall_habit_count = 0
+        overall_total_target = 0
+        overall_total_count = 0
+        per_goal_reports = []
+
+        for goal in goals:
+            habits = Habit.objects.filter(goal=goal)
+            goal_habits_report = []
+            goal_total_target = 0.0
+            goal_total_count = 0.0
+
+            for habit in habits:
+                count = self._count_logs_for_habit(habit, start_of_week,end_of_week)
+
+                if habit.frequency == 'daily':
+                    weekly_target = habit.target_value * 7
+                else:
+                    weekly_target = habit.target_value
+
+                percentage = (count / weekly_target * 100) if weekly_target > 0 else 0.0
+
+                habit_data = {
+                    'id': habit.id,
+                    'name': habit.name,
+                    'target': weekly_target,
+                    'count': count,
+                    'percentage': round(percentage, 2),
+                    'streaks':habit.current_streak,
+                }
+
+                goal_habits_report.append(habit_data)
+
+                overall_habit_count += 1
+                goal_total_target += weekly_target
+                goal_total_count += count
+                overall_total_target += weekly_target
+                overall_total_count += count
+                
+            per_goal_reports.append({
+                'goal_id': goal.id,
+                'goal_name':goal.title,
+                'habits': goal_habits_report,
+                'goal_total_target': goal_total_target,
+                'goal_total_count': goal_total_count,
+                'goal_percentage': round((goal_total_count / goal_total_target * 100), 2) if goal_total_target > 0 else 0.0
+            })
+
+        overall_percentage = round((overall_total_count / overall_total_target * 100), 2) if overall_total_target > 0 else 0.0
+
+        resp = {
+            'week_start': start_of_week.isoformat(),
+            'week_end': end_of_week.isoformat(),
+            'overall': {
+                'total_goals': goals.count(),
+                'total_habits': overall_habit_count,
+                'total_target': overall_total_target,
+                'total_count': overall_total_count,
+                'overall_percentage': overall_percentage,
+            },
+            'goals': per_goal_reports
+        }
+
+        return Response(resp, status=status.HTTP_200_OK)
+
 
 
 def goals_list(request):
@@ -190,7 +281,6 @@ def habit_completion(request):
     habit=Habit.objects.filter(id=habit.id,goal__user=request.user).first()
     today=timezone.localdate()
     log, created = ProgressLog.objects.get_or_create(habit=habit, date=today)
-
     return render(request,'goals/goals_list.html',{'log':log})
 
 def goal_create(request):
