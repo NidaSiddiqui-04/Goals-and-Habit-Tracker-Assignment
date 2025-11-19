@@ -184,7 +184,7 @@ class DashboardView(RetrieveAPIView):
         return Response(resp,status=status.HTTP_200_OK)
 
 
-class CurrentWeekCompleteReportView(APIView):
+class CurrentWeekCompleteReportView(RetrieveAPIView):
     """
     GET /api/weekly/report/
     Returns a complete weekly report for the authenticated user for the current week (Monday - Sunday).
@@ -232,7 +232,7 @@ class CurrentWeekCompleteReportView(APIView):
                     'id': habit.id,
                     'name': habit.name,
                     'target': weekly_target,
-                    'count': count,
+                    'frequency': habit.frequency,
                     'percentage': round(percentage, 2),
                     'streaks':habit.current_streak,
                 }
@@ -306,3 +306,6 @@ def habit_delete(request,id,pk):
 
 def leaderboard(request):
     return render(request,'goals/leaderboard.html')
+
+def weeklyreport(request):
+    return render(request,'goals/weekly_report.html')

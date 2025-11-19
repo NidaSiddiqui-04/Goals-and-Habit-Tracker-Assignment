@@ -1,0 +1,139 @@
+{%extends 'navbar.html'%}
+{%block content%}
+
+<div class="container mt-5">
+    
+
+    <h1 class="text-center">Weekly Report</h1>
+     <p class="text-center fw-bold">(<span id="week_start"></span> to <span id="week_end"></span>)</p>
+    <div class="row  text-center">
+        <div class="col-3 fw-bold " ><div class="rounded-pill" style="background-color: rgb(240, 228, 145);"><p class="fs-3">Total Goals</p><span id="goals" class="fs-4"></span></div></div>
+        <div class="col-3 fw-bold"><div class="rounded-pill" style="background-color: rgb(187, 200, 99);"><p class="fs-3 ">Total Habits</p><span id="habits" class="fs-4"></span></div></div>
+        <div class="col-3 fw-bold " ><div class="rounded-pill " style="background-color: rgb(101, 140, 88);"><p class="fs-3 ">Total Targets</p><span id="targets" class="fs-4"> </span></div></div>
+        <div class="col-3 fw-bold "><div class="rounded-pill " style="background-color: rgb(49, 105, 78);"><p class="fs-3">Progress</p><span id="percentage" class="fs-4"></span></div></div>
+     </div>
+
+
+     
+
+
+</div>
+     <div class="container" style="width: 1000px;">  <div class="goals">
+    <h2 class="text-center my-4">Goals Summary</h2>
+    <div id="goals-container">
+    
+      Loading…
+    </div>
+  </div></div>
+
+
+
+
+{%endblock%}
+{%block scripts%}
+<script>
+    const Api=`http://localhost:8000/api/weekly/report/`;
+    let access=localStorage.getItem('accessToken')
+      async function refreshToken() {
+      const refresh = localStorage.getItem('refresh');
+      const res = await fetch('http://localhost:8000/api/auth/refresh/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ refresh })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('accessToken', data.access);
+        return data.accessToken;
+      } else {
+        alert('Session expired. Please log in again.');
+        window.location.href = '/login/';
+      }
+    }  
+
+    async function loadWeeklyReport() {
+        try{
+            const response=await fetch(Api,{
+                method:"GET",
+                headers:{
+                    'Content-Type':'Application/json',
+                    'Authorization':`Bearer ${access}`
+
+                }
+            })
+            if(!response.ok){
+                throw new Error(`Http error! ${response.status}`);
+            }
+
+            const data=await response.json();
+            document.getElementById('week_start').textContent=data.week_start;
+            document.getElementById('week_end').textContent=data.week_end;
+            document.getElementById('goals').textContent=data.overall.total_goals;
+            document.getElementById('habits').textContent=data.overall.total_habits;
+            document.getElementById('targets').textContent=data.overall.total_target;
+            document.getElementById('percentage').textContent=data.overall.overall_percentage+'%';
+            const goalsContainer = document.getElementById('goals-container');
+            goalsContainer.innerHTML = '';  
+
+      data.goals.forEach(goal => {
+         const goalDiv = document.createElement('div');
+        goalDiv.className = 'goal';
+        goalDiv.innerHTML = `
+          <h3>Goal: ${goal.goal_name} </h3>
+
+          <div class="row">
+            <div class="col-6 text-center"><div class='border border-warning p-2 my-2 rounded-pill fs-5'><p>Goal Target: ${goal.goal_total_target}</p></div></div> 
+            <div class="col-6 text-center"><div class='border border-success p-2 my-2 rounded-pill fs-5'><p>Goal Completion : ${goal.goal_percentage}%</p></div></div> 
+
+            <div>
+
+        `;
+
+        // List habits for this goal
+          const habitDiv = document.createElement('div');
+          habitDiv.className = 'habit';
+          habitDiv.innerHTML = `<table class="table table-success">
+  <thead>
+    <tr>
+      <th scope="col">Id</th>
+      <th scope="col">Name</th>
+      <th scope="col">target</th>
+      <th scope="col">frequency</th>
+      <th scope='col'>streaks</th>
+    </tr>
+  </thead>
+  </table>`
+
+  goal.habits.forEach(habit => {
+  habitDiv.innerHTML+=`
+<table class="table table-danger">
+  <tbody>
+    <tr>
+      <th scope="row">${habit.id}</th>
+      <td>${habit.name}</td>
+      <td>${habit.target}</td>
+      <td>${habit.frequency}</td>
+      <td>🔥${habit.streaks}</td
+    </tr>
+    
+  </tbody>
+</table>
+
+          `;
+          goalDiv.appendChild(habitDiv);
+        });
+
+        goalsContainer.appendChild(goalDiv);
+      });
+    }
+    
+
+        catch(error){
+            console.error('error fetching weekly report data',error)
+        }
+          
+    };
+    
+    window.addEventListener('DOMContentLoaded',loadWeeklyReport);
+</script>
+{%endblock scripts%}

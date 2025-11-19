@@ -25,7 +25,7 @@ from goals import urls
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework_nested.routers import NestedSimpleRouter
-from goals.views import goal_delete,goal_update,goals_list,goal_create,habit_list,habit_create,habit_delete,habit_completion,leaderboard
+from goals.views import goal_delete,goal_update,goals_list,goal_create,habit_list,habit_create,habit_delete,habit_completion,leaderboard,weeklyreport
 
 router =SimpleRouter()
 router.register(r'goals', GoalViewSet, basename='goals')
@@ -49,6 +49,7 @@ urlpatterns = [
     path('api/auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('user_profile/',user_profile,name="user_profile"),
     path('profile/edit/',edit_profile,name="edit_profile"),
+    path('weekly_report/',weeklyreport,name='weekly_report'),
     path('goal_list/',goals_list, name='goal_list'),
     path('goals/create/', goal_create, name='goal_create'), 
     path('goals/<int:id>/update/', goal_update, name='goal_update'),

@@ -18,8 +18,12 @@
         <div class="rounded-pill  p-2" style="background-color:rgb(180, 82, 83);"> <p class="fs-2 fw-bold">Level</p><span id="level" class="fw-bold fs-4">Loading…</span></div>
 
    </div>
-   <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+ 
 
+</div>
+<div class="container mt-4">
+  <div class="row justify-content-center"><div class="col-12">     <canvas id="goalsProgressChart" class="w-75" style="margin-left: 150px;"></canvas>
+</div></div>    
 </div>
 
    {%endblock%}
@@ -57,24 +61,78 @@
         }
         const data = await response.json();
 
-        // populate HTML
+        
         document.getElementById('no-of-goals').textContent = data.no_of_goals;
         document.getElementById('total-xp-points').textContent = data.total_xp_point;
-        document.getElementById('streaks').textContent = data.streaks;
+        document.getElementById('streaks').textContent = data.streaks+'🔥';
         document.getElementById('level').textContent = data.level;
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
-        // optionally show error in UI
+    
       }
     }
 
-    // run on page load
+    
     window.addEventListener('DOMContentLoaded', loadDashboard);
 
 
-  
+   fetch('http://localhost:8000/api/weekly/report/', {
+       method:'GET',
+         headers:{
+            'Content-Type':'application/json',
+            'Authorization':`Bearer ${access}`
+         }
+    })
+    .then(response => {
+      if (!response.ok) throw new Error('Network response was not ok');
+      return response.json();
+    })
+    .then(data => {
+      const goalNames = data.goals.map(g => g.goal_name);
+      const goalPercents = data.goals.map(g => g.goal_percentage);
 
+      const ctx = document.getElementById('goalsProgressChart').getContext('2d');
+      const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: goalNames,
+          datasets: [{
+        
+            data: goalPercents,
+            backgroundColor: goalPercents.map(p => p >= 100 ? 'rgba(75,192,192,0.7)' : 'rgba(255,99,132,0.7)'),
+            borderColor: goalPercents.map(p => p >= 100 ? 'rgba(75,192,192,1)' : 'rgba(255,99,132,1)'),
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 100,
+              title: { display: true, text: 'Percent complete (%)' }
+            }
+          },
+          plugins: {
+            title: {
+              display: true,
+              text: `Week: ${data.week_start} → ${data.week_end}`
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return context.dataset.label + ': ' + context.parsed.y + '%';
+                }
+              }
+            }
+          }
+        }
+      });
+    })
+    .catch(error => {
+      console.error('Error fetching weekly report:', error);
+      // optionally show a message to user
+    });
+  </script>
 
-   </script>
  
 {%endblock scripts%}
