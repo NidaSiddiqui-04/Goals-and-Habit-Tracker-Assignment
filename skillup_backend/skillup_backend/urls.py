@@ -20,7 +20,6 @@ from rest_framework.routers import DefaultRouter,SimpleRouter
 from goals.views import GoalViewSet, HabitViewSet 
 from users.views import RegisterView, MeView,RegisterPageView,LoginPageView,dashboard,Logout,user_profile,edit_profile
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from goals import urls
 from django.conf import settings
 from django.conf.urls.static import static
@@ -58,7 +57,5 @@ urlpatterns = [
     path('<int:id>/habit',habit_list,name='habit_list'),
     path('<int:id>/habit/create/',habit_create,name="habit_create"),
     path('<int:id>/habit/delete/<int:pk>/',habit_delete,name="habit_delete"),
-    path('progresslog/',habit_completion,name="habit_completion"),
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    
  ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

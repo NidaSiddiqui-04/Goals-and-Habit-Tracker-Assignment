@@ -97,9 +97,8 @@ class ProgressCheckinView(APIView):
         user.save()
         newly_awarded = []
 
-        # 5a) XP-based badges: Badge.xp_required <= user.xp_points
         try:
-            xp_badges = Badge.objects.filter(xp_required__lte=user.xp_points).order_by('xp_required', 'id')
+            xp_badges = Badge.objects.filter(xp_required__lte=user.xp_points).exclude(name__icontains='streak').order_by('xp_required', 'id')
             for b in xp_badges:
                 try:
                     ub, created = UserBadge.objects.get_or_create(user=user, badge=b)
@@ -111,26 +110,28 @@ class ProgressCheckinView(APIView):
         except Exception as e:
             logger.exception("Error awarding XP badges: %s", e)
 
-        # 2) Streak-based badges (STRICT) - do NOT include xp_required==0 candidates
-     
+      
         try:
-            # Exclude streak-named badges here so they are NOT awarded by the XP rule
-            xp_badges = Badge.objects.filter(xp_required__lte=user.xp_points).exclude(name__icontains='streak').order_by('xp_required', 'id')
-            for b in xp_badges:
-                try:
-                    ub, created = UserBadge.objects.get_or_create(user=user, badge=b)
-                    if created:
-                        newly_awarded.append(ub)
-                except IntegrityError:
-                    # already created concurrently; skip
-                    continue
-                except Exception:
-                    # log if needed, but continue awarding other badges
-                    continue
-        except Exception:
-            # defensive: don't break check-in if badge query fails
-            pass
+    # Award streak badges (e.g., 7-day, 30-day)
+            streak_badges = Badge.objects.filter(name__icontains='streak', days_required__lte=user.streak_count ).order_by('days_required', 'id')
 
+            for badge in streak_badges:
+        # Suppose you have a field on badge: required_streak_days
+                    days_required = badge.days_required  
+                    if user.streak_count >= days_required:
+                           try:
+                              user_badge, created = UserBadge.objects.get_or_create(user=user,badge=badge)
+                              if created:
+                                newly_awarded.append(user_badge)
+                                logger.info("Streak badge awarded: %s to %s", badge.name, user.username)
+                           except IntegrityError:
+                               continue
+                    else:
+            # user hasn't yet achieved the required streak, so *don’t* award yet
+                        logger.debug("User %s has current streak %d, needs %d for badge %s",
+                         user.username, user.streak_count,days_required, badge.name)
+        except Exception as e:
+               logger.exception("Error awarding streak badges: %s", e)
         
         resp = {
             'log': ProgressLogSerializer(log).data,
@@ -147,11 +148,6 @@ class ProgressCheckinView(APIView):
         return Response(resp, status=status.HTTP_201_CREATED)
         
 
-
-class BadgeListView(ListAPIView):
-    permission_classes = [AllowAny]
-    queryset = Badge.objects.all().order_by('xp_required', 'name')
-    serializer_class = BadgeSerializer
 
 
 class MyBadgesListView(ListAPIView):

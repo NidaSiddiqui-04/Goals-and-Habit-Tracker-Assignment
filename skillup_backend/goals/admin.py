@@ -7,7 +7,7 @@ admin.site.register(ProgressLog)
 
 @admin.register(Badge)
 class BadgeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'xp_required')
+    list_display = ('name', 'xp_required','days_required')
     search_fields = ('name',)
     list_filter = ('xp_required',)
 

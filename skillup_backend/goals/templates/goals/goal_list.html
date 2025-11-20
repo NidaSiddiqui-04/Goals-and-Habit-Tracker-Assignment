@@ -64,7 +64,7 @@
     const REFRESH_URL = 'http://localhost:8000/api/auth/token/refresh/';
 
     async function refreshToken() {
-      const refresh = localStorage.getItem('refresh');
+      const refresh = localStorage.getItem('refreshToken');
       const res = await fetch(REFRESH_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
