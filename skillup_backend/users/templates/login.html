@@ -1,11 +1,28 @@
 {%extends 'base.html'%}
 {%block content%}
 
-<div class="container my-5" style="width: 23rem;">
+<div class="container my-5" >
+    <div class="row ">
+       <div class="col-sm-7"> 
+          <h3><img src="https://img.icons8.com/?size=160&id=vzCFrqU96tpa&format=png" style="width: 80px;" >  Goal Tracker</h3>
+          <div class="my-3">
+            <h5 class="my-4">Achieve Your Goals</h5>
+            <p>Track your progress, build better habits, and accomplish your dreams with our intuitive goal tracking platform.</p>
+      
+          </div>
+          <div class="mt-4">
+            
+              <p><img src="https://img.icons8.com/?size=160&id=64704&format=png" style="width: 50px;" >Set Clear Goals<br/> <span class="ps-5">Define your objectives and break them down into actionable steps</span></p>
+            
+              <p><img src="https://img.icons8.com/?size=96&id=12814&format=png" style="width: 50px;" >Track Progress<br/> <span class="ps-5">Monitor your achievements with visual progress indicators</span></p>
+              <p><img src="https://img.icons8.com/?size=160&id=IvKTbJEwgLtS&format=png" style="width: 50px;" >Stay Motivated<br/> <span class="ps-5">Celebrate milestones and maintain momentum</span></p>
+
+          </div>
+       </div>
     
 
-    
-      <div class="row">
+    <div class="col-sm-5 mt-4 " style="width: 28rem;">
+      <div class="row ">
         <div class="shadow-lg p-3 mb-5 bg-body rounded">
 
      <div class="p-3">
@@ -21,7 +38,7 @@
             <input type="password" name="password" id="password" class="form-control" required>
         </div>
         <div class="col mb-3">
-                    <button type="submit" style="width: 100%;" class="btn btn-outline-primary">Login</button>
+                    <button type="submit" id="login" style="width: 100%;" class="btn btn-outline-primary ">Login</button>
 
         </div>
         <div class="col  text-center">
@@ -31,7 +48,8 @@
         </span>
     </div></div>
     </div>
-    
+    </div>
+    </div>
 </div>
 
 
@@ -53,12 +71,16 @@ const msg  = document.getElementById('msg');
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   msg.textContent = '';
-  msg.className   = '';
-
+  msg.className   = ' <button type="submit"  style="width: 100%;" class="btn btn-outline-primary disabled">Login</button>'
+  
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value;
+  if(username==''&&password==''){
+    const btn=document.getElementById('login')
+    btn='';
+    btn=``
+  }
   
-
   if (!username || !password) {
     msg.textContent = 'Username and password are required.';
     msg.className   = 'error';
@@ -75,7 +97,10 @@ form.addEventListener('submit', async (e) => {
       },
       
       body: JSON.stringify({username,password})
+     
+
     });
+
        const data = await res.json();
 
     
@@ -86,11 +111,15 @@ form.addEventListener('submit', async (e) => {
       msg.className   = 'error';
       return;
     }
+  
+
+   
+
 
     // On success you’ll get something like: { access: "...", refresh: "..." }
     const accessToken  = data.access;
     const refreshToken = data.refresh;
-   
+    
     // Store them (localStorage, sessionStorage, or cookie depending on your security model)
     localStorage.setItem('accessToken', accessToken);
     localStorage.setItem('refreshToken', refreshToken);
@@ -102,8 +131,7 @@ form.addEventListener('submit', async (e) => {
     }
   } catch (err) {
     console.error('Login fetch error:', err);
-    msg.textContent = 'An error occurred. Try again later.';
-    msg.className   = 'error';
+     msg.innerHTML = '<p class="alert alert-danger" role="alert">An error occurred. Try again later</p>';
   }
 });
 </script>

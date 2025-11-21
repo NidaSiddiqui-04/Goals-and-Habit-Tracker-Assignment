@@ -1,12 +1,31 @@
 {%extends "base.html"%}
 
 {%block content%}
-<div class="container mt-5 " style="width: 25rem;">
- 
-     <div class="row ">
+<div class="container mt-5 ">
+   <div class="row">
+       <div class="col-7 mt-5"> 
+          <h3><img src="https://img.icons8.com/?size=160&id=vzCFrqU96tpa&format=png" style="width: 80px;" >  Goal Tracker</h3>
+          <div class="my-3">
+            <h5 class="my-4">Achieve Your Goals</h5>
+            <p>Track your progress, build better habits, and accomplish your dreams with our intuitive goal tracking platform.</p>
+      
+          </div>
+          <div class="mt-4">
+            
+              <p><img src="https://img.icons8.com/?size=160&id=64704&format=png" style="width: 50px;" >Set Clear Goals<br/> <span class="ps-5">Define your objectives and break them down into actionable steps</span></p>
+            
+              <p><img src="https://img.icons8.com/?size=96&id=12814&format=png" style="width: 50px;" >Track Progress<br/> <span class="ps-5">Monitor your achievements with visual progress indicators</span></p>
+              <p><img src="https://img.icons8.com/?size=160&id=IvKTbJEwgLtS&format=png" style="width: 50px;" >Stay Motivated<br/> <span class="ps-5">Celebrate milestones and maintain momentum</span></p>
+
+          </div>
+       </div>
+     <div class="col-5">
+     <div class="row " style="width: 30rem;">
       <div class="shadow-lg p-3 mb-5 bg-body rounded">
+        
 
          <div class="p-5">
+        
              <h2 class="text-center ">Create an Account</h2>
 
         <form method="post" id="registerForm"  novalidate>
@@ -14,80 +33,65 @@
             <!-- top of register.html inside body -->
  
        <div id="msg"></div>
-        <div class="row my-3  ">
+       <div class="row">
+        <div class="col-12 my-3  ">
             <label for="first_name" class="ps-0">First Name : *</label>
             <input type="text" id="first_name" name="first_name" class="form-control">
         </div>
-        <div class="row mb-3  ">
+        <div class="col-12 mb-3  ">
             <label for="last_name" class="ps-0">Last Name : *</label>
             <input type="text" id="last_name" name="last_name" class="form-control">
         </div>
-        <div class="row mb-3 ">
+        <div class="col-12 mb-3 ">
             <label for="username" class="ps-0">Username : *</label>
             <input id="username" name="username" placeholder="Username" class="form-control" required/>
         </div>
-        <div class="row mb-3 ">
+        <div class="col-12 mb-3 ">
             <label for="email" class="ps-0">Email : *</label>
             <input id="email" name="email" type="email" placeholder="name@gmail.com" class="form-control" required>
         </div>
-        <div class="row mb-3">
+        <div class="col-4 mb-3">
              <label for="avatar" class="ps-0">Avatar :</label>
-             <input type="file" id="avatar" name="avatar" >
+             <input type="file" id="avatar" name="avatar" class="form-control" >
         </div>
-        <div class="row mb-3 ">
+        <div class="col-8 mb-3 ">
            <label for="bio" class="ps-0">Bio :</label>
            <input type="text" name="bio" id="bio" class="form-control">
         </div>
-        <div class="row mb-3 ">
+        <div class="col-12 mb-3 ">
             <label for="password" class="ps-0 ">Password : *</label>
             <input type="password" name="password" id="password" class="form-control" required>
         </div>
-        <div class="row mb-3">
+        <div class="col-12 mb-3">
             <label for="password2" class="ps-0  ">Confirm password : *</label>
             <input type="password" name="password2" id="password2" class="form-control" required>
         </div>
-        <div class="ps-0 mb-3">
+        <div class="col-12 ps-0 mb-3">
         <button type="submit" style="width:100%;" class="btn btn-outline-primary rounded">Register</button>
         </div>
-        <div class="col ">
+        <div class="col-12 ">
           <p>Already have an account? <a href="{%url 'login'%}">login</a></p>
         </div>
+       </div>
         <!--<div id="msg"></div>-->
         </form>
+         </div>
         </div>
     </div>
 </div>
     </span> 
 </div>
-  <!---<h2>Create account</h2>
-
-  <form id="registerForm" method="post" novalidate>
-    {% csrf_token %}
-    <input id="username" name="username" placeholder="Username" required />
-    <input id="email" name="email" type="email" placeholder="Email" required />
-    <input id="password" name="password" type="password" placeholder="Password" required />
-    <button type="submit">Register</button>
-    <div id="msg"></div>
-  </form>--->
+  
 {%endblock%}
 
 {% block scripts %}
      
 <script>
-  // get CSRF token from cookie (inserted by {% csrf_token %})
-  function getCookie(name) {
-    const v = `; ${document.cookie}`;
-    const parts = v.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-  }
+ 
   const form = document.getElementById('registerForm');
   const msg = document.getElementById('msg');
 
-function getCookie(name) {
-  const v = `; ${document.cookie}`;
-  const parts = v.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-}
+
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -126,14 +130,9 @@ form.addEventListener('submit', async (e) => {
   }
 
   try {
-    const csrfToken = getCookie('csrftoken');
-    const res = await fetch('/api/auth/register/', {
+     const res = await fetch('/api/auth/register/', {
       method: 'POST',
-      credentials: 'same-origin',
-      headers: {
-        'X-CSRFToken': csrfToken
-        // DO NOT set Content-Type header!
-      },
+    
       body: formData
     });
 
@@ -141,35 +140,26 @@ form.addEventListener('submit', async (e) => {
     if (!res.ok) {
       console.error('Validation Errors:', data);
       // Display errors appropriately (fields etc.)
-      msg.textContent = JSON.stringify(data);
-      msg.className = 'error';
+      msg.innerHTML=`<p class="alert alert-danger" role="alert">${JSON.stringify(data)}</p>`;
       return;
     }
 
     console.log('Registration succeeded:', data);
-    msg.textContent = 'Account created successfully.';
-    msg.className = 'success';
-    window.location.href = '/login/';
+    msg.innerHTML= '<p class="alert alert-success" role="alert">Account Created successfully</p>';
+    setTimeout(function() {
+  window.location.href = "/login/";  
+}, 5000);
 
 
   } catch (err) {
     console.error('Fetch error:', err);
-    msg.textContent = 'An error occurred. Please try again.';
-    msg.className = 'error';
+     msg.innerHTML =`<p class="alert alert-danger" role="alert">An error occurred. Please try again.</p>`;
   }
 
 
   
 
-      // if API returns tokens, save them
-      if (data.access) {
-        localStorage.setItem('access_token', data.access);
-        if (data.refresh) localStorage.setItem('refresh_token', data.refresh);
-      }
-
-      setTimeout(() => window.location.href = '/login/', 800);
-
-     
+    
   });
 </script>
 {%endblock scripts%}

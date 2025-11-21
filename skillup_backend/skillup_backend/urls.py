@@ -39,7 +39,7 @@ urlpatterns = [
 
     
     path('api/auth/register/', RegisterView.as_view(), name='auth-register'),
-    path('register/', RegisterPageView.as_view(), name='register-page'),
+    path('', RegisterPageView.as_view(), name='register-page'),
     path('login/',LoginPageView.as_view(),name='login'),
     path('logout/',Logout.as_view(),name="logout"),
     path('dashboard/',dashboard,name='dashboard'),

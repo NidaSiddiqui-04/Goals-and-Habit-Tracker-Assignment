@@ -35,23 +35,7 @@
   <script>
     const API_URL = 'http://localhost:8000/api/goals/';
 
-    async function refreshToken() {
-      const refresh = localStorage.getItem('refreshToken');
-      const res = await fetch('http://localhost:8000/api/auth/refresh/', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ refresh })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        localStorage.setItem('accessToken', data.access);
-        return data.access;
-      } else {
-        alert('Session expired. Please log in again.');
-        window.location.href = '/login/';
-      }
-    }
-
+    
     document.getElementById('goalForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       let access = localStorage.getItem('accessToken');

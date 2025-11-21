@@ -3,19 +3,19 @@
 
 {%extends 'navbar.html'%}
 {%block content%}
-<hr/>
-<div class="container mt-4">
+<section>
+<div class="container mt-4 border">
    <h1 class="fw-bold ps-4 my-3">{{today}}</h1>
 
    <div class="row row-cols-4 text-center">
-      <div class="col "><div class="rounded-pill  p-2"  style="background-color: rgb(132, 153, 79);">    <p class="fs-2 fw-bold">Total Goals</p> <span id="no-of-goals" class=" fw-bold fs-4">Loading…</span></div>
+      <div class="col "><div class="rounded-pill  p-2"  style="background-color:rgb(210, 220, 182);">    <p class="fs-2 fw-bold">Total Goals</p> <span id="no-of-goals" class=" fw-bold fs-4">Loading…</span></div>
    </div>
-   <div class="col"> <div class="rounded-pill  p-2" style="background-color: rgb(255, 231, 151);"> <p class="fs-2 fw-bold">Total XP </p>
+   <div class="col"> <div class="rounded-pill  p-2" style="background-color: rgb(210, 220, 182);"> <p class="fs-2 fw-bold">Total XP </p>
    <span id="total-xp-points"  class="fw-bold fs-4">Loading…</span></div></div>
    <div class="col">
-    <div class="rounded-pill  p-2" style="background-color: rgb(252, 181, 59);"><p class="fs-2 fw-bold">Streaks</p><span id="streaks" class="fw-bold fs-4">Loading…</span></div></div>
+    <div class="rounded-pill  p-2" style="background-color: rgb(210, 220, 182);"><p class="fs-2 fw-bold">Streaks</p><span id="streaks" class="fw-bold fs-4">Loading…</span></div></div>
    <div class="col">
-        <div class="rounded-pill  p-2" style="background-color:rgb(180, 82, 83);"> <p class="fs-2 fw-bold">Level</p><span id="level" class="fw-bold fs-4">Loading…</span></div>
+        <div class="rounded-pill  p-2" style="background-color:rgb(210, 220, 182);"> <p class="fs-2 fw-bold">Level</p><span id="level" class="fw-bold fs-4">Loading…</span></div>
 
    </div>
  
@@ -25,28 +25,13 @@
   <div class="row justify-content-center"><div class="col-12"><canvas id="goalsProgressChart" class="w-75" style="margin-left: 150px;"></canvas>
 </div></div>    
 </div>
-
+</section>
    {%endblock%}
   {%block scripts%}
    <script>
       let API=`http://localhost:8000/api/analytics/overview/`;
       let access=localStorage.getItem('accessToken')
-      async function refreshToken() {
-      const refresh = localStorage.getItem('refresh');
-      const res = await fetch('http://localhost:8000/api/auth/refresh/', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ refresh })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        localStorage.setItem('access', data.accessToken);
-        return data.accessToken;
-      } else {
-        alert('Session expired. Please log in again.');
-        window.location.href = '/login/';
-      }
-    }     
+        
     async function loadDashboard() {
       try {
         const response =await fetch(API,{
@@ -99,7 +84,7 @@
           datasets: [{
         
             data: goalPercents,
-            backgroundColor: goalPercents.map(p => p >= 100 ? 'rgba(75,192,192,0.7)' : 'rgba(255,99,132,0.7)'),
+            backgroundColor: goalPercents.map(p => p >= 100 ? 'rgba(75,192,192,0.7)'  : 'rgba(255,99,132,0.7)'),
             borderColor: goalPercents.map(p => p >= 100 ? 'rgba(75,192,192,1)' : 'rgba(255,99,132,1)'),
             borderWidth: 1
           }]

@@ -2,15 +2,30 @@
 
 {%block content%}
 <div class="container mt-5 text-center">
+  
    <h2>Are you sure you want to log out!</h2>
    <div class="row mt-4">
     <div class="col-6 text-end">
-            <a href="{%url 'login'%}" class="btn btn-outline-danger">Yes</a>
-
+      <form id="logout">
+            <button  type="submit"  class="btn btn-outline-danger">Yes</button>
+      </form>
     </div>
       <div class="col-6 text-start">
-        <a href="{%url 'dashboard'%}" class="btn btn-outline-success">NO</a>
+        <a href="{%url 'dashboard'%}"  class="btn btn-outline-success">NO</a>
       </div>
    </div>
+  
 </div>
 {%endblock%}
+{%block scripts%}
+<script>
+  let log=document.getElementById('logout')
+  log.addEventListener('submit', async (e) => {
+  e.preventDefault();
+   localStorage.clear()
+   window.location.href=`{%url 'login'%}`
+
+
+  })
+</script>
+{%endblock scripts%}

@@ -11,11 +11,11 @@
   {% endblock extra_styles %}
   </head>
 <body style="font-family:'Times New Roman', Times, serif;">
-     <nav class="navbar navbar-expand-lg navbar-light bg-light p-2">
+     <nav class="navbar navbar-expand-lg " style="background-color:rgb(161, 188, 152);">
   <div class="container-fluid">
-    <a class="navbar-brand fs-2" href="#">Goals and Habit Tracker</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
+    <a class="navbar-brand fs-2" href="#" style="color:black;"> Goals and Habit Tracker</a>
+    <button class="navbar-toggler" style="color: black; background-color: aliceblue;" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon " ><img src="https://cdn-icons-png.flaticon.com/128/7710/7710488.png" style="width: 20px;"></span>
     </button>
     
       
@@ -24,7 +24,7 @@
          
    <li class="nav-item">
           
-          <a class="nav-link text-dark " aria-current="page" href="#" id="content" onclick="window.location.href=`/user_profile/`"></a>
+          <a class="nav-link  " aria-current="page" href="#" id="content" style="color: rgb(35, 36, 38);" onclick="window.location.href=`/user_profile/`"></a>
           
 
   </li>
@@ -33,7 +33,7 @@
   <li class="nav-item">
           
 
-    <a class="nav-link text-dark my-4 " href="{%url 'logout'%}" tabindex="-1" aria-disabled="true">Logout</a>
+    <a class="nav-link  my-4 " style="color: rgb(28, 31, 34);" href="{%url 'logout'%}" tabindex="-1" aria-disabled="true">Logout</a>
   </li>
 </ul>
       </div>
@@ -41,12 +41,12 @@
   </div>
   
  </nav>
- <section class="container">
+ <section class="container-fluid" style="background-color: rgb(241, 243, 224);">
   <div class="row">
-    <div class="col-3"><a href="{%url 'dashboard'%}" class="nav-link btn btn-outline-info btn-lg text-dark  ">Home 🏠</a></div>
-    <div class="col-3"><a href="{%url 'goal_list'%}" class=" nav-link  btn btn-outline-warning btn-lg text-dark">Goals 🎯</a></div>
-    <div class="col-3"><a href="{%url 'leaderboard'%}" class="nav-link btn btn-outline-danger btn-lg text-dark">LeaderBoard 🏆</a></div>
-    <div class="col-3"><a href="{%url 'weekly_report'%}" class="nav-link btn btn-outline-secondary btn-lg text-dark">Weekly Progress 📈</a></div>
+    <div class="col-3"><a href="{%url 'dashboard'%}" class="nav-link text-center fs-4 text-dark">Home 🏠</a></div>
+    <div class="col-3"><a href="{%url 'goal_list'%}" class=" nav-link  text-center fs-4 text-dark">Goals 🎯</a></div>
+    <div class="col-3"><a href="{%url 'leaderboard'%}" class="nav-link text-center fs-4 text-dark">LeaderBoard 🏆</a></div>
+    <div class="col-3"><a href="{%url 'weekly_report'%}" class="nav-link text-center fs-4 text-dark">Weekly Progress 📈</a></div>
   </div>
 
 </section> 
@@ -67,9 +67,28 @@
 </body>
 <script>
     const token = localStorage.getItem('accessToken');
-    if (!token) {
-      window.location.href = '/login/';
-    } else {
+       async function refreshToken() {
+      const refresh = localStorage.getItem('refreshToken');
+      const res = await fetch('http://localhost:8000/api/auth/refresh/',{
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        
+        body: JSON.stringify({ refresh })
+      });
+        
+
+      if (res.ok) {
+        alert('refreshing access token')
+
+        const data = await res.json();
+        localStorage.setItem('accessToken', data.access);
+        return data.access;
+      } else{
+        window.location.href=`{%url 'login'%}`
+      }
+    }     
+   
+    
       fetch('/api/auth/me', {
         headers: { 'Authorization': 'Bearer ' + token }
       })
@@ -79,9 +98,9 @@
       })
       .then(data => {
         
-        document.getElementById('content').innerHTML =  `<img src="${data.avatar}"  class="img=fluid w-25 rounded-circle"> Welcome, ${data.username}!`;
+        document.getElementById('content').innerHTML =  `<img src="${data.avatar}"  class="img=fluid w-25 rounded-circle" > Welcome, ${data.username}!`;
         
       }).catch(e => { console.error(e); });
-    }
+    
   </script>
 </html>

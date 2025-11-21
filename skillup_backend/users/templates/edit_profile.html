@@ -53,22 +53,8 @@
 <script>
   let access = localStorage.getItem('accessToken');
 
-  async function refreshToken() {
-    const refresh = localStorage.getItem('refresh');
-    const res = await fetch('http://localhost:8000/api/auth/refresh/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refresh })
-    });
-    if (res.ok) {
-      const data = await res.json();
-      localStorage.setItem('accessToken', data.accessToken);
-      return data.accessToken;
-    } else {
-      alert('Session expired. Please log in again.');
-      window.location.href = '/login/';
-    }
-  }
+
+    
 
   document.addEventListener('DOMContentLoaded', async function() {
     try {

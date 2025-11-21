@@ -6,11 +6,11 @@
 
     <h1 class="text-center">Weekly Report</h1>
      <p class="text-center fw-bold">(<span id="week_start"></span> to <span id="week_end"></span>)</p>
-    <div class="row  text-center">
-        <div class="col-3 fw-bold " ><div class="rounded-pill" style="background-color: rgb(240, 228, 145);"><p class="fs-3">Total Goals</p><span id="goals" class="fs-4"></span></div></div>
-        <div class="col-3 fw-bold"><div class="rounded-pill" style="background-color: rgb(187, 200, 99);"><p class="fs-3 ">Total Habits</p><span id="habits" class="fs-4"></span></div></div>
-        <div class="col-3 fw-bold " ><div class="rounded-pill " style="background-color: rgb(101, 140, 88);"><p class="fs-3 ">Total Targets</p><span id="targets" class="fs-4"> </span></div></div>
-        <div class="col-3 fw-bold "><div class="rounded-pill " style="background-color: rgb(49, 105, 78);"><p class="fs-3">Progress</p><span id="percentage" class="fs-4"></span></div></div>
+    <div class="row  text-center my-5">
+        <div class="col-3 fw-bold " ><div class="rounded-pill" style="background-color: rgb(210, 220, 182);"><p class="fs-3">Total Goals</p><span id="goals" class="fs-4"></span></div></div>
+        <div class="col-3 fw-bold"><div class="rounded-pill" style="background-color: rgb(210, 220, 182);"><p class="fs-3 ">Total Habits</p><span id="habits" class="fs-4"></span></div></div>
+        <div class="col-3 fw-bold " ><div class="rounded-pill " style="background-color: rgb(210, 220, 182);"><p class="fs-3 ">Total Targets</p><span id="targets" class="fs-4"> </span></div></div>
+        <div class="col-3 fw-bold "><div class="rounded-pill " style="background-color: rgb(210, 220, 182);"><p class="fs-3">Progress</p><span id="percentage" class="fs-4"></span></div></div>
      </div>
 
 
@@ -34,22 +34,7 @@
 <script>
     const Api=`http://localhost:8000/api/weekly/report/`;
     let access=localStorage.getItem('accessToken')
-      async function refreshToken() {
-      const refresh = localStorage.getItem('refresh');
-      const res = await fetch('http://localhost:8000/api/auth/refresh/', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ refresh })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        localStorage.setItem('accessToken', data.access);
-        return data.accessToken;
-      } else {
-        alert('Session expired. Please log in again.');
-        window.location.href = '/login/';
-      }
-    }  
+     
 
     async function loadWeeklyReport() {
         try{
@@ -106,7 +91,7 @@
 
   goal.habits.forEach(habit => {
   habitDiv.innerHTML+=`
-<table class="table table-danger">
+<table class="table  alert alert-danger">
   <tbody>
     <tr>
       <th scope="row">${habit.id}</th>

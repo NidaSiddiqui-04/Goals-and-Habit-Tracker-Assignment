@@ -22,22 +22,7 @@
     const goalId = "{{ goal_id }}";
     const API_URL = `http://localhost:8000/api/goals/${goalId}/`;
 
-    async function refreshToken() {
-      const refresh = localStorage.getItem('refresh');
-      const res = await fetch('http://localhost:8000/api/auth/token/refresh/', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ refresh })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        localStorage.setItem('access', data.accessToken);
-        return data.accessToken;
-      } else {
-        alert('Session expired. Please log in again.');
-        window.location.href = '/login/';
-      }
-    }
+    
 
     async function deleteGoal() {
       let access = localStorage.getItem('accessToken');

@@ -14,22 +14,7 @@
 <script>
     let access=localStorage.getItem('accessToken')
     const api='http://localhost:8000/api/leaderboard/'
-    async function refreshToken() {
-      const refresh = localStorage.getItem('refresh');
-      const res = await fetch('http://localhost:8000/api/auth/refresh/', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ refresh })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        localStorage.setItem('access', data.accessToken);
-        return data.accessToken;
-      } else {
-        alert('Session expired. Please log in again.');
-        window.location.href = '/login/';
-      }
-    }  
+    
     
     async function fetchGoals() {
       let access = localStorage.getItem('accessToken');
@@ -58,7 +43,7 @@
         <div class="container rounded-pill" style='height:15rem;width:1000px'>
             <div class="shadow-lg p-3 mb-5 bg-body-tertiary rounded">
 
-            <div class="row" style='background-color:rgb(145, 173, 200);'>
+            <div class="row" style='background-color:rgb(210, 220, 182);'>
            <div class="col-4 ">
             <h3 class ='text-center my-5 p-4'>🏆${user.xp_points}</h3>
             </div>
