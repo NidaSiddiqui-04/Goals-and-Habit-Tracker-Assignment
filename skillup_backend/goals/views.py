@@ -76,7 +76,7 @@ class ProgressCheckinView(APIView):
             user.streak_count += 1
             habit.current_streak+=1
         else:
-            user.streak_count = 1
+    
             habit.current_streak =1
 
         habit.save()
@@ -89,7 +89,9 @@ class ProgressCheckinView(APIView):
         if user.xp_points>=300:
             user.level=4
         if user.xp_points>=400:
-            user.level=5    
+            user.level=5  
+        if user.xp_points>=500:
+            user.level=6      
         user.save()
         
         XP_PER_CHECKIN = 10
