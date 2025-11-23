@@ -1,1 +1,1 @@
-web: gunicorn skillup_backend.wsgi:application 
+web: python serve.py
