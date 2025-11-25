@@ -24,7 +24,7 @@
          
    <li class="nav-item">
           
-          <a class="nav-link  " aria-current="page" href="#" id="content" style="color: rgb(35, 36, 38);" onclick="window.location.href=`/user_profile/`"></a>
+          <a class="nav-link mt-1 " aria-current="page" href="#" id="content" style="color: rgb(35, 36, 38);" onclick="window.location.href=`/user_profile/`"></a>
           
 
   </li>
@@ -33,7 +33,7 @@
   <li class="nav-item">
           
 
-    <a class="nav-link  my-4 " style="color: rgb(28, 31, 34);" href="{%url 'logout'%}" tabindex="-1" aria-disabled="true">Logout</a>
+    <a class="nav-link mt-3" style="color: rgb(28, 31, 34);" href="{%url 'logout'%}" tabindex="-1" aria-disabled="true">Logout</a>
   </li>
 </ul>
       </div>
@@ -98,7 +98,7 @@
       })
       .then(data => {
         
-        document.getElementById('content').innerHTML =  `<img src="${data.avatar}"  class="img=fluid w-25 rounded-circle" > Welcome, ${data.username}!`;
+        document.getElementById('content').innerHTML =  `<img src="${data.avatar}"  class="img=fluid  rounded-circle" style="width:50px;"  > Welcome, ${data.username}!`;
         
       }).catch(e => { console.error(e); });
     
