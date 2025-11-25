@@ -10,7 +10,7 @@
       }
     },
     {
-      "src": "build_files.sh",
+      "src": "build_files.ps1",
       "use": "@vercel/static-build",
       "config": {
         "distDir": "staticfiles"
