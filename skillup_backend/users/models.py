@@ -2,7 +2,6 @@ from django.db import models
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from cloudinary.models import CloudinaryField
 
 class User(AbstractUser):
     xp_points = models.IntegerField(default=0)
