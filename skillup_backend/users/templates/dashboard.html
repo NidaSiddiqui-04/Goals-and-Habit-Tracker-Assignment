@@ -29,7 +29,7 @@
    {%endblock%}
   {%block scripts%}
    <script>
-      let API=`http://localhost:8000/api/analytics/overview/`;
+      let API=`/api/analytics/overview/`;
       let access=localStorage.getItem('accessToken')
         
     async function loadDashboard() {
@@ -61,7 +61,7 @@
     window.addEventListener('DOMContentLoaded', loadDashboard);
 
 
-   fetch('http://localhost:8000/api/weekly/report/', {
+   fetch ('/api/weekly/report/', {
        method:'GET',
          headers:{
             'Content-Type':'application/json',

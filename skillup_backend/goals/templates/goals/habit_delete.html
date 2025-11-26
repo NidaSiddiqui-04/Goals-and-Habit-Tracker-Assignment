@@ -28,7 +28,7 @@
 
     deleteBtn.addEventListener('click', async () => {
        const habitId = '{{habit_id}}';
-          const apiBase = `http://localhost:8000/api/goals/${goalId}/habits/${habitId}/`; // adjust
+          const apiBase = `/api/goals/${goalId}/habits/${habitId}/`; // adjust
      console.log(apiBase)
       let access = localStorage.getItem('accessToken');
     

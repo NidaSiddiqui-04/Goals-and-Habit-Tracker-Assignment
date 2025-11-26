@@ -19,7 +19,7 @@
  {% block scripts %}
 <script>
   const goalId = '{{ goal_id }}';
-  const apiBase = `http://localhost:8000/api/goals/${goalId}/habits/`;
+  const apiBase = `/api/goals/${goalId}/habits/`;
   const container = document.getElementById('habitListContainer');
   const access = localStorage.getItem('accessToken');
 

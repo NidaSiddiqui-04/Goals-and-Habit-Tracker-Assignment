@@ -59,7 +59,7 @@
   document.addEventListener('DOMContentLoaded', async function() {
     try {
       access = localStorage.getItem('accessToken');  // get fresh token
-      const res = await fetch('http://localhost:8000/api/auth/me/', {
+      const res = await fetch('/api/auth/me/', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${access}`
@@ -96,7 +96,7 @@
     formData.append('bio', document.getElementById('bio').value);
 
     try {
-      const res = await fetch('http://localhost:8000/api/auth/me/', {
+      const res = await fetch('/api/auth/me/', {
         method: "PUT",
         headers: {
           'Authorization': `Bearer ${access}`

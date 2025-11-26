@@ -98,7 +98,7 @@ WSGI_APPLICATION = 'skillup_backend.wsgi.application'
 
 
 CORS_ALLOWED_ORIGINS = [
-     
+    "https://goals-and-habit-tracker-assignment-bf8g.onrender.com",
     "http://localhost:8000",
     
 ]

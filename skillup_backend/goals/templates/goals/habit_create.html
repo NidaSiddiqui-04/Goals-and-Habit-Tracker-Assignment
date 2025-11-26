@@ -43,8 +43,7 @@
   {%endblock%}
   {%block scripts%}
   <script>
-    const apiBase = 'http://localhost:8000/api'; // adjust
-     const createForm = document.getElementById('createForm');
+    const createForm = document.getElementById('createForm');
     const message = document.getElementById('message');
     
 
@@ -60,7 +59,7 @@
         target_value:document.getElementById('target_value').value.trim()
       };
       try {
-        const resp = await fetch(`${apiBase}/goals/${goalId}/habits/`, {
+        const resp = await fetch(`/api/goals/${goalId}/habits/`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
