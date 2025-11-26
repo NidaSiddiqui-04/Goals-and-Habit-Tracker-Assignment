@@ -46,6 +46,10 @@ class UserSerializer(serializers.ModelSerializer):
     badges = UserBadgeSerializer(source='user_badges', many=True, read_only=True)
     first_name=serializers.CharField(max_length=30)
     last_name=serializers.CharField(max_length=30)
+ 
     class Meta:
         model = User
         fields = ('id', 'username', 'email', 'xp_points', 'level', 'streak_count', 'avatar', 'bio','badges' ,'first_name','last_name')
+    
+
+   

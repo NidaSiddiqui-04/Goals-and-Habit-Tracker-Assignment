@@ -10,7 +10,7 @@
     <h1 class="text-center">My Profile         <img id="badgeicon" class="icon mt-0" src=""  style="width: 70px;">
 </h1>
     <div class="col-12 text-center">
-    <img id="avatarImg" class="avatar mb-0 rounded-circle" src="" alt="User Avatar">
+    <img id="avatarImg" class="avatar mb-0 rounded-circle img-fluid" src="" alt="User Avatar">
     </div>
     <div class="col-12">
         <div id="badge_des" class="text-center"></div>
@@ -64,7 +64,7 @@
       document.getElementById('email').textContent = data.email || '';
       document.getElementById('name').textContent = `${data.first_name || ''} ${data.last_name || ''}`;
       document.getElementById('bio').textContent=data.bio;
-      document.getElementById('xp_points').textContent = data.xp_points || '';
+      document.getElementById('xp_points').textContent = data.xp_points || '0';
       document.getElementById('level').textContent = data.level || '';
       document.getElementById('streaks').textContent = data.streak_count+'🔥' || '';
       const avatarImg = document.getElementById('avatarImg');

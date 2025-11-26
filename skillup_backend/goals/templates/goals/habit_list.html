@@ -94,7 +94,7 @@
     const statusElement = document.getElementById(`status-${habitId}`);
 
     try {
-      const response = await fetch(`http://localhost:8000/api/progress/${habitId}/checkin/`, {
+      const response = await fetch(`/api/progress/${habitId}/checkin/`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

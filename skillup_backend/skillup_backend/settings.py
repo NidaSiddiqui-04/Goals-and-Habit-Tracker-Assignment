@@ -15,6 +15,12 @@ from decouple import config
 from datetime import timedelta
 import os
 
+from dotenv import load_dotenv
+
+
+# Load environment variables
+load_dotenv()  
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -44,8 +50,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'drf_spectacular',
-
-
+    
 
 
     'goals',
@@ -169,5 +174,8 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.User'
+
+
+
 MEDIA_ROOT=os.path.join(BASE_DIR,'pictures')
-MEDIA_URL='/pictures/'
+MEDIA_URL='/media/'

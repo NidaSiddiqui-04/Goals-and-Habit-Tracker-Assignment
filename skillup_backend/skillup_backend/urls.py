@@ -25,6 +25,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework_nested.routers import NestedSimpleRouter
 from goals.views import goal_delete,goal_update,goals_list,goal_create,habit_list,habit_create,habit_delete,habit_completion,leaderboard,weeklyreport
+from django.urls import re_path
+from django.views.static import serve
+
 
 router =SimpleRouter()
 router.register(r'goals', GoalViewSet, basename='goals')
@@ -57,8 +60,7 @@ urlpatterns = [
     path('<int:id>/habit',habit_list,name='habit_list'),
     path('<int:id>/habit/create/',habit_create,name="habit_create"),
     path('<int:id>/habit/delete/<int:pk>/',habit_delete,name="habit_delete"),
-    
+    re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+
  ]
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

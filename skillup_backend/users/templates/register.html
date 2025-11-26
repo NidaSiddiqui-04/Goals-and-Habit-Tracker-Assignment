@@ -105,12 +105,11 @@ form.addEventListener('submit', async (e) => {
   const avatarElem = document.getElementById('avatar');
   const bio        = document.getElementById('bio').value.trim();
   const password   = document.getElementById('password').value;
-  const password2  = document.getElementById('password2').value;
+   const password2  = document.getElementById('password2').value;
 
   if (!username || !email || !password) {
-    msg.textContent = 'Username, email and password are required.';
-    msg.className = 'error';
-    return;
+    msg.innerHTML ='<p class="alert alert-danger" role="alert">Username, email and password are required.</p>';
+     return;
   }
 
   console.log('username |'+username+'|');
@@ -136,8 +135,7 @@ form.addEventListener('submit', async (e) => {
       body: formData
     });
 
-    const data = await res.json();
-    if (!res.ok) {
+  if (!res.ok) {
       console.error('Validation Errors:', data);
       // Display errors appropriately (fields etc.)
       msg.innerHTML=`<p class="alert alert-danger" role="alert">${JSON.stringify(data)}</p>`;
@@ -145,19 +143,18 @@ form.addEventListener('submit', async (e) => {
     }
 
     console.log('Registration succeeded:', data);
-    msg.innerHTML= '<p class="alert alert-success" role="alert">Account Created successfully</p>';
-    setTimeout(function() {
+        msg.innerHTML= '<p class="alert alert-success" role="alert">Account Created successfully</p>';
+
+  setTimeout(function() {
   window.location.href = "/login/";  
 }, 3000);
 
 
   } catch (err) {
     console.error('Fetch error:', err);
-     msg.innerHTML =`<p class="alert alert-danger" role="alert">An error occurred. Please try again.</p>`;
+    msg.innerHTML =`<p class="alert alert-danger" role="alert">An error occurred. Please try again.</p>`;
   }
 
-
-  
 
     
   });

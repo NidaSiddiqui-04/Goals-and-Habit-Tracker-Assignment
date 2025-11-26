@@ -87,8 +87,11 @@
     e.preventDefault();
     access = localStorage.getItem('accessToken');
     const formData = new FormData();
+     if (avatarElem.files.length > 0) {
     formData.append('avatar', avatarElem.files[0]);
+  }
 
+ 
     formData.append('username', document.getElementById('inputUsername').value);
     formData.append('email', document.getElementById('inputEmail').value);
     formData.append('first_name', document.getElementById('inputFirstName').value);
