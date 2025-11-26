@@ -134,6 +134,7 @@ form.addEventListener('submit', async (e) => {
     
       body: formData
     });
+    const data = await res.json();
 
   if (!res.ok) {
       console.error('Validation Errors:', data);
